@@ -5,6 +5,7 @@ var games = require("../games.json")
 
 router.get("/query", (req, res) => {
 	res.send("hello you have made a query")
+	res.send(req.query)
 	if (req.query.all = "true") {
 		res.end(games)
 	} else {
