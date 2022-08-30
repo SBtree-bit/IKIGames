@@ -3,5 +3,9 @@ extends layout
 block content
   h1= title
   p Welcome to #{title}
+
 script.
-  document.getElementById("home").className = "active"
+  document.querySelector("#home").classList.add("active");
+  var h1 = document.createElement("h1")
+  h1.innerHTML = "hello"
+  document.body.appendChild(h1)
