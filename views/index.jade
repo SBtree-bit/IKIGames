@@ -1,11 +1,10 @@
 extends layout
+block variables
+  - var pagejs = "/javascripts/index.js"
+  - var indexButtonClass = "active"
 
 block content
-  h1= title
-  p Welcome to #{title}
-
-script.
-  document.querySelector("#home").classList.add("active");
-  var h1 = document.createElement("h1")
-  h1.innerHTML = "hello"
-  document.body.appendChild(h1)
+  #game(class="hidden")
+    a#gameurl.
+      <h3 id="name"></h3>
+      <img id="picture"></img>

@@ -1,8 +1,12 @@
+block variables
 doctype html
 html
   head
+    script(src=(pagejs))
     link(rel='stylesheet', href='/stylesheets/navbar.css')
+    link(rel='stylesheet', href='/stylesheets/style.css')
   body
     ul#navbar
-      li
-        a(href='index.html', id="home") Home
+      li(class=(indexButtonClass || ""))
+        a(href='', id="home") Home
+    block content

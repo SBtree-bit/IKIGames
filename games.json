@@ -1,5 +1,6 @@
 {
-	"hello, world": {
-		
-	}
+	"games": [
+		{"name": "hello_world"},
+		{"name": "coding bois are testing hello"}
+	]
 }

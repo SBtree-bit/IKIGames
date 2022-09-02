@@ -1,22 +1,26 @@
 var express = require("express")
 var router = express.Router();
 
-var games = require("../games.json")
+var games = require("../games.json").games
 
 router.get("/query", (req, res) => {
-	res.send("hello you have made a query")
-	res.send(req.query)
-	if (req.query.all = "true") {
-		res.end(games)
+	console.log("query")
+	if (req.query.all == "true") {
+		console.log("all")
+		res.send(games)
 	} else {
+		console.log("search")
 		let queriedGames = []
-		for (var i of Object.keys(games)) {
+		for (var i = 0; i < games.length; i++) {
+			var game = games[i]
 			let find = req.query.q
-			if (s.indexOf(find, find.length)) {
-				queriedGames.push(games[i])
+			console.log(game)
+			console.log(game["name"])
+			if (game["name"].indexOf(find) !== -1) {
+				queriedGames.push(game)
 			}
 		}
-		res.end(queriedGames)
+		res.send(queriedGames)
 	}
 })
 
