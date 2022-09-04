@@ -84,12 +84,11 @@
             renderer.gammaInput = true;
             renderer.gammaOutput = true;
             renderer.shadowMap.enabled = true;
-
+            
             controls = new OrbitControls(camera, renderer.domElement);
             controls.minDistance = 2;
             controls.maxDistance = 100
             controls.target.set(0, 0, 0)
-            controls.reset()
             controls.update()
         }
 
