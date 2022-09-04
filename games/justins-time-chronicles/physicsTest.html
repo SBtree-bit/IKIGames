@@ -11,12 +11,22 @@
 </head>
 
 <body>
-    <script src="three/build/three.js"></script>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "./three/build/three.module.js",
+                "three/addons/": "./three/examples/jsm/"
+            }
+        }
+    </script>
     <script src="three/examples/js/libs/ammo.wasm.js"></script>
-    <script>
+    <script type="module">
+        import * as THREE from 'three';
+
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
         //variable declaration
-        let physicsWorld, scene, camera, renderer, clock, rigidBodies = [], tmpTrans;
+        let physicsWorld, scene, camera, renderer, controls, clock, rigidBodies = [], tmpTrans;
         let colGroupPlane = 1, colGroupRedBall = 2, colGroupGreenBall = 4;
 
         //Ammojs Initialization
@@ -53,7 +63,7 @@
             scene.add(dirLight);
             dirLight.castShadow = true;
             dirLight.shadow.mapSize.width = 2048;
-            dirLight.shadow.mapSize, height = 2048;
+            dirLight.shadow.mapSize.height = 2048;
             let d = 50;
             dirLight.shadow.camera.left = -d;
             dirLight.shadow.camera.right = d;
@@ -69,6 +79,13 @@
             renderer.gammaInput = true;
             renderer.gammaOutput = true;
             renderer.shadowMap.enabled = true;
+
+            controls = new OrbitControls(camera, renderer.domElement);
+            controls.minDistance = 2;
+            controls.maxDistance = 100
+            controls.target.set(0, 0, 0)
+            controls.reset()
+            controls.update()
         }
 
         function renderFrame() {
@@ -299,6 +316,11 @@
             createJointObjects()
             renderFrame()
         }
+
+        setInterval(() => {
+            controls.saveState()
+            location.reload()
+        }, 12000)
 
     </script>
 </body>
