@@ -34,11 +34,11 @@ function init() {
             // model
 
             const loader = new GLTFLoader().setPath('models/');
-            loader.load('level.glb', function (gltf) {
+            /*loader.load('level.glb', function (gltf) {
 
                 scene.add(gltf.scene);
 
-            });
+            });*/
             loader.load('player.glb', function (gltf) {
                 player = gltf.scene.children[0]
                 scene.add(player)
@@ -80,6 +80,11 @@ window.addEventListener("keydown", (e) => {
         player.position.z += 1
     } else if (e.key == "s") {
         player.position.z -= 1
+    }
+    if (e.key == "a") {
+        player.position.x += 1;
+    } else if (e.key == "d") {
+        player.position.x -= 1;
     }
 })
 
