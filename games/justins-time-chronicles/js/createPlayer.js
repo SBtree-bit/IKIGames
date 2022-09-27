@@ -1,0 +1,95 @@
+import * as THREE from 'three';
+import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { ColladaLoader } from 'three/addons/loaders/ColladaLoader.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+async function createPlayer(scene, physicsWorld, camera, STATE, rigidBodies, renderer) {
+    let pos = { x: 0, y: 0, z: 0 };
+    let quat = { x: 0, y: 0, z: 0, w: 1 };
+    let mass = 1;
+
+    const loader = new GLTFLoader().setPath('models/');
+    var gltf = await loader.loadAsync('player.glb')
+    let player = new THREE.Group()
+    player.add(gltf.scene.children[0])
+
+    scene.add(player);
+
+    let controls = new PointerLockControls(camera, renderer.domElement)
+
+    document.querySelector("#game").onclick = function() {
+        controls.lock()
+    }
+
+    
+    let transform = new Ammo.btTransform();
+    transform.setIdentity();
+    transform.setOrigin(new Ammo.btVector3(pos.x, pos.y, pos.z));
+    transform.setRotation(new Ammo.btQuaternion(quat.x, quat.y, quat.z, quat.w));
+    let motionState = new Ammo.btDefaultMotionState(transform);
+
+
+
+    let triangle, triangle_mesh = new Ammo.btTriangleMesh;
+    var geometry = player.children[0].geometry
+    //new ammo vectors
+    let vectA = new Ammo.btVector3(0, 0, 0);
+    let vectB = new Ammo.btVector3(0, 0, 0);
+    let vectC = new Ammo.btVector3(0, 0, 0);
+
+    //retrieve vertices positions from object
+    let verticesPos = geometry.getAttribute('position').array;
+    let triangles = [];
+    for (let i = 0; i < verticesPos.length; i += 3) {
+        triangles.push({ x: verticesPos[i], y: verticesPos[i + 1], z: verticesPos[i + 2] })
+    }
+
+    //use triangles data to draw ammo shape
+    for (let i = 0; i < triangles.length - 3; i += 3) {
+
+        vectA.setX(triangles[i].x);
+        vectA.setY(triangles[i].y);
+        vectA.setZ(triangles[i].z);
+
+        vectB.setX(triangles[i + 1].x);
+        vectB.setY(triangles[i + 1].y);
+        vectB.setZ(triangles[i + 1].z);
+
+        vectC.setX(triangles[i + 2].x);
+        vectC.setY(triangles[i + 2].y);
+        vectC.setZ(triangles[i + 2].z);
+
+        triangle_mesh.addTriangle(vectA, vectB, vectC, true);
+    }
+
+    Ammo.destroy(vectA)
+    Ammo.destroy(vectB)
+    Ammo.destroy(vectC)
+
+    let colShape = new Ammo.btConvexTriangleMeshShape(triangle_mesh, true)
+    colShape.setMargin(0.05);
+
+    let localInertia = new Ammo.btVector3(0, 0, 0);
+    colShape.calculateLocalInertia(mass, localInertia);
+
+    let rbInfo = new Ammo.btRigidBodyConstructionInfo(mass, motionState, colShape, localInertia);
+    let body = new Ammo.btRigidBody(rbInfo);
+
+    body.setActivationState(STATE.DISABLE_DEACTIVATION)
+
+    physicsWorld.addRigidBody(body);
+
+    body.setAngularFactor( 1, 0, 0 );
+
+
+
+    player.userData.physicsBody = body;
+    rigidBodies.push(player);
+
+    console.log(player)
+
+    return {player, controls};
+}
+
+export default createPlayer;

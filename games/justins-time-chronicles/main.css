@@ -2,3 +2,54 @@ body {
     margin: 0;
     overflow: hidden;
 }
+
+#ui {
+    margin: 0;
+    overflow: hidden;
+}
+
+#commandUI {
+    display: none;
+    color: green;
+    background-color: black;
+    font-family: Consolas, Courier, monospace;
+    position: absolute;
+    left: 12.5%;
+    top: 12.5%;
+    width: 75%;
+    height: 75%;
+}
+
+#commandText {
+    display: inline;
+}
+
+#commandInput{
+    display: inline;
+    border: none;
+    background-color: black;
+    color: green;
+    font-family: Consolas, Courier, monospace;
+    font-size: 16px;
+}
+
+#commandInput:focus{
+    outline: none;
+    border: none;
+    background-color: black;
+    color: green;
+    font-family: Consolas, Courier, monospace;
+}
+
+#game {
+    display: inline;
+}
+
+.material-symbols-outlined {
+    float: right;
+}
+
+#commandHeader {
+    border-bottom: 1px solid green;
+    height: 4%;
+}
