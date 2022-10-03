@@ -7,7 +7,9 @@ import createLevel from './js/createLevel.js';
 import setupEventHandlers from './js/setupEventHandlers.js';
 import setupConsole from './js/console.js';
 import initMultiplayer from './js/initMultiplayer.js';
+import getControls from './js/gamepad.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import loadModels from './js/loadAnims.js';
 
 //variable declaration
 let physicsWorld, scene, stats, camera, renderer, controls, clock, rigidBodies = [], tmpTrans;
@@ -19,7 +21,9 @@ let multiPlayers = {
     sockets: [],
     threeOBJs: []
 };
+var prevOutput;
 let moveDirection = { left: 0, right: 0, forward: 0, back: 0, up: 0, down: 0, stop: false }
+var mixer, activeAction, modelReady, animationActions;
 const STATE = { DISABLE_DEACTIVATION: 4 }
 
 //Ammojs Initialization
@@ -36,6 +40,9 @@ function renderFrame() {
     renderer.render(scene, camera);
     socket.emit("update position", { x: player.position.x, y: player.position.y, z: player.position.z })
     socket.emit("get players")
+    if (modelReady) {
+        mixer.update(deltaTime)
+    }
     requestAnimationFrame(renderFrame);
 }
 
@@ -81,11 +88,12 @@ async function start() {
     });
     ({ clock, scene, camera, renderer, stats } = setupGraphics())
     createBackground(scene);
-    ({ player, controls } = await createPlayer(scene, physicsWorld, camera, STATE, rigidBodies, renderer))
+    ({ player, controls, mixer, activeAction, modelReady, animationActions } = await createPlayer(scene, physicsWorld, camera, STATE, rigidBodies, renderer, loadModels))
     createLevel(scene, physicsWorld)
     //createJointObjects()
-    setupEventHandlers(moveDirection)
+    setupEventHandlers(moveDirection, camera)
     renderFrame()
+        ({ animationActions, mixer, activeAction, modelReady } = await loadModels("models/player/AJ.fbx", ["models/player/AJ@idle.fbx"]))
 }
 
 function moveBall() {
@@ -107,13 +115,11 @@ function moveBall() {
         physicsBody.setLinearVelocity(resultantImpulse);
 
         if (moveZ == 0 && moveX == 0) return;
+        physicsWorld.stepSimulation(clock.getDelta())
         var direction = new THREE.Vector3()
         camera.getWorldDirection(direction)
-        console.log(direction)
-        camera.position.add(direction.multiplyScalar(moveZ))
-        player.position.x = camera.position.x;
-        player.position.y = camera.position.y;
-        player.position.z = camera.position.z;
+        direction.y = -0.5
+        player.position.add(direction.multiplyScalar(0.1))
         physicsWorld.removeRigidBody(player.userData.physicsBody)
         let ms = player.userData.physicsBody.getMotionState()
         if (ms) {
@@ -123,17 +129,14 @@ function moveBall() {
             player.userData.physicsBody.setWorldTransform(tmpTrans)
         }
         physicsWorld.addRigidBody(player.userData.physicsBody)
-        updatePhysics(clock.getDelta())
+        physicsWorld.stepSimulation(clock.getDelta())
 
         if (moveX == 0) return;
         camera.rotation.y -= 90
         direction = new THREE.Vector3()
         camera.getWorldDirection(direction)
-        console.log(direction)
-        camera.position.add(direction.multiplyScalar(moveX))
-        player.position.x = camera.position.x;
-        player.position.y = camera.position.y;
-        player.position.z = camera.position.z;
+        direction.y = 0;
+        player.position.add(direction.multiplyScalar(moveX))
         physicsWorld.removeRigidBody(player.userData.physicsBody)
         ms = player.userData.physicsBody.getMotionState()
         if (ms) {

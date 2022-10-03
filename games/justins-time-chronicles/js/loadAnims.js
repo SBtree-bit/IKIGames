@@ -1,16 +1,14 @@
 import * as THREE from 'three';
 import {FBXLoader} from 'three/addons/loaders/FBXLoader.js';
-async function loadModels(playerURL, animationURLS, mixer, activeAction, scene, modelReady) {
+async function loadModels(playerURL, animationURLS) {
     var fbxLoader = new FBXLoader();
     var object = await fbxLoader.loadAsync(playerURL)
     object.scale.set(0.01, 0.01, 0.01);
     var animationActions = [];
-    mixer = new THREE.AnimationMixer(object);
+    let mixer = new THREE.AnimationMixer(object);
     console.log(mixer)
     animationAction = mixer.clipAction(object.animations[0]);
     animationActions.push(animationAction);
-    activeAction = animationActions[0];
-    scene.add(object);
     //add an animation from another file
     /*fbxLoader.load(animationURLS[0], function (object) {
         console.log('loaded samba');
@@ -49,7 +47,8 @@ async function loadModels(playerURL, animationURLS, mixer, activeAction, scene, 
         var animationAction = mixer.clipAction(object1.animations[0]);
         animationActions.push(animationAction);
     }
-    modelReady = true;
-    return {animationActions, mixer, activeAction, modelReady}
+    let modelReady = true;
+    let activeAction = animationActions[1];
+    return {animationActions, mixer, activeAction, modelReady, object}
 }
 export default loadModels;

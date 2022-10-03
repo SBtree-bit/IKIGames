@@ -45,11 +45,26 @@ body {
     display: inline;
 }
 
-.material-symbols-outlined {
+#closeButton {
     float: right;
 }
 
 #commandHeader {
     border-bottom: 1px solid green;
     height: 4%;
+}
+
+#jumpButton {
+    border: solid 1px black;
+    border-radius: 50px;
+    background-color: white;
+}
+
+#joystick {
+    display: inline;
+    float: right;
+    border: solid 1px black;
+    width: 200;
+    height: 200;
+    border-radius: 50px;
 }

@@ -14,7 +14,7 @@ async function createLevel(scene, physicsWorld) {
 
     level.castShadow = true;
 
-    for (var i = 0; i < 7; i++) {
+    for (var i = 0; i < level.children.length; i++) {
         let item = level.children[i];
         scene.add(item)
         if (item.geometry) {
