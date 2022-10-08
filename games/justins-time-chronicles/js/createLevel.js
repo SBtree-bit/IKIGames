@@ -5,8 +5,8 @@ async function createLevel(scene, physicsWorld) {
     let quat = { x: 0, y: 0, z: 0, w: 1 };
     let mass = 0;
 
-    const loader = new GLTFLoader().setPath('models/');
-    var gltf = await loader.loadAsync('house.glb')
+    const loader = new GLTFLoader().setPath('models/obj_test/');
+    var gltf = await loader.loadAsync('cave12.glb')
     //var gltf = await loader.loadAsync('temple.glb')
     let level = gltf.scene
 
@@ -29,6 +29,7 @@ async function createLevel(scene, physicsWorld) {
             let triangle, triangle_mesh = new Ammo.btTriangleMesh;
             triangle_mesh.setScaling(new Ammo.btVector3(item.scale.x, item.scale.y, item.scale.z))
             var geometry = item.geometry
+            console.log("geometry")
             console.log(item)
             //new ammo vectors
             let vectA = new Ammo.btVector3(0, 0, 0);
@@ -72,9 +73,11 @@ async function createLevel(scene, physicsWorld) {
 
             let rbInfo = new Ammo.btRigidBodyConstructionInfo(mass, motionState, colShape, localInertia);
             let body = new Ammo.btRigidBody(rbInfo);
+            body.threeObject = item;
 
             physicsWorld.addRigidBody(body);
         } else {
+            console.log("no geometry")
             console.log(item)
         }
     }

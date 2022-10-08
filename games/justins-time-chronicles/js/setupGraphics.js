@@ -6,9 +6,12 @@ function setupGraphics() {
     let scene = new THREE.Scene();
     scene.background = new THREE.Color(0xbfd1e5);
 
-    let camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.2, 5000);
-    camera.position.set(0, 0, 0);
-    camera.lookAt(new THREE.Vector3(0, 0, 0));
+    let fpCamera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.2, 5000);
+    fpCamera.position.set(0, 0, 0);
+    let tpCamera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.2, 5000);
+    tpCamera.position.set(0, 0, -1)
+    fpCamera.name = "First-Person Camera"
+    tpCamera.name = "Third-Person Camera"
 
     let hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.1);
     hemiLight.color.setHSL(0.6, 0.6, 0.6);
@@ -43,7 +46,8 @@ function setupGraphics() {
 
     let stats = Stats()
     //document.body.appendChild(stats.dom)
+    let camera = fpCamera
 
-    return {clock, scene, camera, renderer, stats}
+    return {clock, scene, camera, fpCamera, tpCamera, renderer, stats}
 }
 export default setupGraphics;

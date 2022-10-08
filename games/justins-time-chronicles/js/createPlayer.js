@@ -13,18 +13,24 @@ async function createPlayer(scene, physicsWorld, camera, STATE, rigidBodies, ren
 
     console.log(player)
 
-    let {mixer, activeAction, modelReady, animationActions, object} = await loadModels("models/player/Aj.fbx", ["models/player/Aj@idle.fbx"])
-
+    let {mixer, activeAction, modelReady, animationActions, object} = await loadModels("models/player/Aj.fbx", ["models/player/Aj@run.fbx"])
+    activeAction = animationActions[1];
+    object.position.y -= 0.58;
     player.add(object)
+    activeAction.play()
 
     /*const loader = new GLTFLoader().setPath('models/');
     var gltf = await loader.loadAsync('player.glb')*/
-    player.visible = false;
+    //player.visible = false;
     scene.add(player)
 
     let controls = new PointerLockControls(camera, renderer.domElement)
-    //let controls = new OrbitControls(camera, document.body)
+    /*let controls = new OrbitControls(camera, document.body)
+    controls.enableRotate = false
+    controls.enablePan = false;
+    controls.enableZoom = false;*/
 
+    
     document.querySelector("#game").onclick = function() {
         controls.lock()
     }
@@ -90,7 +96,7 @@ async function createPlayer(scene, physicsWorld, camera, STATE, rigidBodies, ren
     body.setAngularFactor( 1, 0, 0 );
 
 
-
+    body.threeObject = player;
     player.userData.physicsBody = body;
     rigidBodies.push(player);
 

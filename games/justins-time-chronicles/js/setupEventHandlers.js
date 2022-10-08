@@ -1,21 +1,21 @@
 import getControls from "./gamepad.js";
 import * as THREE from 'three';
 
-function setupEventHandlers(moveDirection, camera) {
+function setupEventHandlers(moveDirection, camera, fpCamera, tpCamera) {
 
-    window.addEventListener('keydown', (event) => { handleKeyDown(event, moveDirection) }, false);
+    window.addEventListener('keydown', (event) => { handleKeyDown(event, moveDirection, camera, fpCamera, tpCamera) }, false);
     window.addEventListener('keyup', (event) => { handleKeyUp(event, moveDirection) }, false);
 
-    setInterval(() => { gamepadControls(moveDirection, camera) }, 50)
+    setInterval(() => { gamepadControls(moveDirection, fpCamera) }, 50)
 
 }
 
-function gamepadControls(moveDirection, camera) {
+function gamepadControls(moveDirection, fpCamera) {
     if (navigator.getGamepads()[0]) {
         moveDirection.stop = false;
         var controls = getControls(0)
-        moveDirection.back = controls.joysticks.R.y * 0.1;
-        moveDirection.left = controls.joysticks.R.x * 0.1;
+        moveDirection.back = controls.joysticks.R.y * 10;
+        moveDirection.left = controls.joysticks.R.x * 10;
         //camera.rotation.y -= controls.joysticks.L.x * 0.1;
         moveDirection.up = controls.buttons.includes("ZR") ? 1 : 0
         moveDirection.down = controls.buttons.includes("ZL") ? 1 : 0
@@ -27,7 +27,7 @@ function gamepadControls(moveDirection, camera) {
         const movementX = controls.joysticks.L.x;
         const movementY = controls.joysticks.L.y;
 
-        _euler.setFromQuaternion(camera.quaternion);
+        _euler.setFromQuaternion(fpCamera.quaternion);
 
         _euler.y -= movementX * 0.1;
         _euler.x -= movementY * 0.1;
@@ -36,23 +36,38 @@ function gamepadControls(moveDirection, camera) {
 
         _euler.x = Math.max(_PI_2 - Math.PI, Math.min(_PI_2 - 0, _euler.x));
 
-        camera.quaternion.setFromEuler(_euler);
+        fpCamera.quaternion.setFromEuler(_euler);
     }
 }
 
 
-function handleKeyDown(event, moveDirection) {
+function handleKeyDown(event, moveDirection, camera, fpCamera, tpCamera) {
 
     let keyCode = event.keyCode;
 
     switch (keyCode) {
 
+        case 70:
+            console.log(camera.current)
+            camera.set = true;
+            if (camera.current.name == "First-Person Camera") {
+                moveDirection.hidePlayer = true;
+                camera.current = tpCamera
+            } else {
+                camera.current = fpCamera
+                moveDirection.hidePlayer = false
+            }
+            console.log(camera.current)
+            console.log(camera)
+            //camera == fpCamera ? tpCamera : fpCamera
+            break;
+
         case 87: //W: FORWARD
-            moveDirection.forward = 0.1
+            moveDirection.forward = 10
             break;
 
         case 83: //S: BACK
-            moveDirection.back = 0.1
+            moveDirection.back = 10
             break;
 
         case 65: //A: LEFT

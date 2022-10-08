@@ -4,6 +4,7 @@ async function loadModels(playerURL, animationURLS) {
     var fbxLoader = new FBXLoader();
     var object = await fbxLoader.loadAsync(playerURL)
     object.scale.set(0.01, 0.01, 0.01);
+    let activeAction = object.animations[0];
     var animationActions = [];
     let mixer = new THREE.AnimationMixer(object);
     console.log(mixer)
@@ -48,7 +49,6 @@ async function loadModels(playerURL, animationURLS) {
         animationActions.push(animationAction);
     }
     let modelReady = true;
-    let activeAction = animationActions[1];
     return {animationActions, mixer, activeAction, modelReady, object}
 }
 export default loadModels;

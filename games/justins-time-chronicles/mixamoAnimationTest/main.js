@@ -21,7 +21,9 @@ import loadModels from '../js/loadAnims.js';
     var activeAction;
     var lastAction;
     var mixer;
-    ({animationActions, mixer, activeAction, modelReady} = await loadModels('models/vanguard_t_choonyung.fbx', ['models/vanguard@samba.fbx', 'models/vanguard@bellydance.fbx', 'models/vanguard@idle.fbx'], scene))
+    var object;
+    ({animationActions, mixer, activeAction, modelReady, object} = await loadModels('models/vanguard_t_choonyung.fbx', ['models/vanguard@samba.fbx', 'models/vanguard@bellydance.fbx', 'models/vanguard@idle.fbx']))
+    scene.add(object)
     console.log(mixer)
     window.addEventListener('resize', onWindowResize, false);
     function onWindowResize() {
@@ -56,13 +58,15 @@ import loadModels from '../js/loadAnims.js';
         }
     };
     setInterval(() => {
+        //setAction(animationActions[1])
+        
         setAction(animationActions[i])
         if ((i + 1) == animationActions.length) {
             i = 0;
         } else {
             i++;
         }
-    }, 5000)
+    }, 1000)
     var clock = new THREE.Clock();
     function animate() {
         requestAnimationFrame(animate);
