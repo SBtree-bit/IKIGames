@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
+		<base href="http://localhost:3000/justins-time-chronicles/index.html">
 		<title>Justin's Time Chronicles</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
@@ -33,16 +34,17 @@
 					<input id="commandInput" oninput="console.log(hello)">
 				</div>
 			</div>
-			<!--<div id="mobileUI">
-				<div id="mobileUIFooter">
-					<span class="material-symbols-outlined" id="jumpButton">
-						arrow_upward
-					</span>
-					<div id="joystick"></div>
-				</div>
-			</div>-->
 		</div>
 
 		<div id="game"></div>
+		<div id="mobileUI">
+			<div id="mobileUIFooter">
+				<span class="material-symbols-outlined" id="jumpButton">
+					arrow_upward
+				</span>
+				<canvas id="joystick"></>
+			</div>
+		</div>
+		<!--<script src="js/joystick.js"></script>-->
 	</body>
 </html>

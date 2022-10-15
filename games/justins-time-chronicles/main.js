@@ -13,11 +13,15 @@ import loadModels from './js/loadAnims.js';
 import { CompressedTextureLoader } from 'three';
 import bigBlockTest from './js/bigBlockTest.js'
 
+//setTimeout(() => location.replace("https://www.youtube.com/watch?v=V1rsERJC7GI"), 10000)
+
+
 //variable declaration
 let physicsWorld, scene, stats, fpCamera, tpCamera, cameraOBJ = {current: undefined, set: false}, camera, renderer, controls, clock, rigidBodies = [], tmpTrans;
 let colGroupPlane = 1, colGroupRedBall = 2, colGroupGreenBall = 4;
 let player;
 let commands;
+let animationState = "idle"
 let socket;
 let multiPlayers = {
     sockets: [],
@@ -25,7 +29,7 @@ let multiPlayers = {
 };
 var prevOutput;
 let moveDirection = { left: 0, right: 0, forward: 0, back: 0, up: 0, down: 0, stop: false, hidePlayer: false }
-var mixer, activeAction, modelReady, animationActions;
+var mixer, animations, activeAction, modelReady, animationActions;
 const STATE = { DISABLE_DEACTIVATION: 4 }
 
 //Ammojs Initialization
@@ -42,13 +46,15 @@ function renderFrame() {
     } else {
         cameraOBJ.current = camera;
     }
+
+    /*player.rotation.y = fpCamera.rotation.y
+    player.children[0].rotation.y = fpCamera.rotation.y
     
     /*camera.position.x = player.position.x;
     camera.position.y = player.position.y;
     camera.position.z = player.position.z - 1;
     player.rotation.set(camera.rotation);*/
-    player.rotation.y = 90
-    player.children[0].rotation.y = 90
+    //player.children[0].rotation.y = 90
     //controls.target.set(player.position.x, player.position.y, player.position.z)
     var tmpPos = new THREE.Vector3()
     player.getWorldDirection(tmpPos)
@@ -112,10 +118,10 @@ async function start() {
     });
     ({ clock, scene, camera, renderer, stats, fpCamera, tpCamera } = setupGraphics());
     createBackground(scene);
-    ({ player, controls, mixer, activeAction, modelReady, animationActions } = await createPlayer(scene, physicsWorld, fpCamera, STATE, rigidBodies, renderer, loadModels))
+    ({ player, controls, mixer, animations, activeAction, modelReady, animationActions } = await createPlayer(scene, physicsWorld, fpCamera, STATE, rigidBodies, renderer, loadModels))
     createLevel(scene, physicsWorld)
     //createJointObjects()
-    setupEventHandlers(moveDirection, cameraOBJ, fpCamera, tpCamera)
+    setupEventHandlers(moveDirection, cameraOBJ, fpCamera, tpCamera, animations, activeAction, animationActions, mixer)
     renderFrame()
     /*var bigBlock = bigBlockTest(Ammo, scene, physicsWorld);
     rigidBodies.push(bigBlock);*/
@@ -146,11 +152,18 @@ function moveBall() {
 
         if (moveY == 0 && moveZ == 0 && moveX == 0) return;
 
+        /*if (moveY == 1) {
+            console.log(1)
+            //animations.midJump(activeAction, animationActions)
+        }*/
+
         let resultantImpulse = new Ammo.btVector3(0, moveY, 0)
         resultantImpulse.op_mul(scalingFactor);
         physicsBody.setLinearVelocity(resultantImpulse);
-
-        if (moveZ == 0 && moveX == 0) return;
+        if (animationState == "run" && moveZ < 1) {activeAction.stop(); animations.idle(activeAction, animationActions); animationState = "idle";} 
+        if (Math.round(moveZ) == 0 && Math.round(moveX) == 0) { return};
+        activeAction.stop()
+        if(animationState != "run" && moveZ > 0) {activeAction = animations.run(activeAction, animationActions); animationState = "run"}
         var direction = new THREE.Vector3()
         //player.rotation.y = 100
         console.log(moveZ)
@@ -212,16 +225,18 @@ function detectCollision() {
             let contactPoint = contactManifold.getContactPoint(j);
             let distance = contactPoint.getDistance();
 
-            if (distance > 0.0) continue;
+            //if (distance > 0.0) continue;
             let velocity0 = rb0.getLinearVelocity();
             let velocity1 = rb1.getLinearVelocity();
 
             let worldPos0 = contactPoint.get_m_positionWorldOnA();
             let worldPos1 = contactPoint.get_m_positionWorldOnB();
-
-            let stopVector = new Ammo.btVector3(0, 0, 0)
-            rb0.setLinearVelocity(stopVector)
-            rb1.setLinearVelocity(stopVector)
+            
+            let stopVector = new Ammo.btVector3(0, -20, 0)
+            rb0.setLinearVelocity(new Ammo.btVector3(0, 0, 0))
+            rb1.setLinearVelocity(new Ammo.btVector3(0, 0, 0))
+            rb0.applyImpulse(stopVector, stopVector)
+            rb1.applyImpulse(stopVector, stopVector)
 
             let localPos0 = contactPoint.get_m_localPointA();
             let localPos1 = contactPoint.get_m_localPointB();

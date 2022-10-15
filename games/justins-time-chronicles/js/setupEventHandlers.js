@@ -1,16 +1,30 @@
 import getControls from "./gamepad.js";
 import * as THREE from 'three';
+import joystick from './joystick.js';
 
-function setupEventHandlers(moveDirection, camera, fpCamera, tpCamera) {
+function setupEventHandlers(moveDirection, camera, fpCamera, tpCamera, animations, activeAction, animationActions, mixer) {
 
-    window.addEventListener('keydown', (event) => { handleKeyDown(event, moveDirection, camera, fpCamera, tpCamera) }, false);
+    window.addEventListener('keydown', (event) => { handleKeyDown(event, moveDirection, camera, fpCamera, tpCamera, animations, activeAction, animationActions, mixer) }, false);
     window.addEventListener('keyup', (event) => { handleKeyUp(event, moveDirection) }, false);
 
-    setInterval(() => { gamepadControls(moveDirection, fpCamera) }, 50)
+    setInterval(() => { gamepadControls(moveDirection, fpCamera, tpCamera, camera) }, 50)
+    console.log(document.querySelector("#joystick"))
+    joystick(document.querySelector("#joystick"), window.innerWidth / 50, 8, 2, 8, 2, function(angle_in_degrees, x, y, speed, x_relative, y_relative) {
+        moveDirection.back = y_relative;
+        moveDirection.right = x_relative
+    })
+    document.querySelector("#jumpButton").addEventListener('mousedown', mouseDown);
+    document.querySelector("#jumpButton").addEventListener('mouseup', mouseUp);
+    document.querySelector("#jumpButton").addEventListener('touchstart', mouseDown);
+    document.querySelector("#jumpButton").addEventListener('touchend', mouseUp);
+    document.querySelector("#jumpButton").addEventListener('touchcancel', mouseUp);
+
+    function mouseDown() {moveDirection.up = 1;}
+    function mouseUp() {moveDirection.up = 0;}
 
 }
 
-function gamepadControls(moveDirection, fpCamera) {
+function gamepadControls(moveDirection, fpCamera,tpCamera,camera) {
     if (navigator.getGamepads()[0]) {
         moveDirection.stop = false;
         var controls = getControls(0)
@@ -21,6 +35,7 @@ function gamepadControls(moveDirection, fpCamera) {
         moveDirection.down = controls.buttons.includes("ZL") ? 1 : 0
         if (controls.buttons.includes("ZR") && controls.buttons.includes("ZL")) {moveDirection.stop = true}
         if (controls.buttons.includes("Home")) location.reload()
+        if (controls.buttons.includes("+")) {camera.set = true; if (camera.current == tpCamera){ camera.current = fpCamera; moveDirection.hidePlayer = false} else {camera.current = tpCamera; moveDirection.hidePlayer = true}}
         //camera.rotation.x -= movementY * 0.002;
         //camera.rotation.x = Math.max((Math.PI / 2) - Math.PI, Math.min((Math.PI / 2) - 0, movementY))
         var _euler = new THREE.Euler(0, 0, 0, "YXZ")
@@ -41,7 +56,8 @@ function gamepadControls(moveDirection, fpCamera) {
 }
 
 
-function handleKeyDown(event, moveDirection, camera, fpCamera, tpCamera) {
+function handleKeyDown(event, moveDirection, camera, fpCamera, tpCamera, animations, activeAction, animationActions, mixer) {
+    //location.replace("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
 
     let keyCode = event.keyCode;
 
@@ -79,7 +95,12 @@ function handleKeyDown(event, moveDirection, camera, fpCamera, tpCamera) {
             break;
 
         case 32:
-            moveDirection.up = 1;
+            activeAction = animations.startJump(activeAction, animationActions)
+            moveDirection.up = 1
+            mixer.addEventListener("finished", (e) => {
+                
+                moveDirection.up = 1
+            })
             break;
 
         case 16:

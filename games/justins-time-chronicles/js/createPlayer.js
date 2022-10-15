@@ -13,11 +13,53 @@ async function createPlayer(scene, physicsWorld, camera, STATE, rigidBodies, ren
 
     console.log(player)
 
-    let {mixer, activeAction, modelReady, animationActions, object} = await loadModels("models/player/Aj.fbx", ["models/player/Aj@run.fbx"])
-    activeAction = animationActions[1];
+    let {mixer, activeAction, modelReady, animationActions, object} = await loadModels("models/player/Aj.fbx", ["models/player/Aj@idle.fbx","models/player/Aj@jump.fbx", "models/player/Aj@run.fbx"])
     object.position.y -= 0.58;
     player.add(object)
-    activeAction.play()
+    var animations = {
+        startJump(activeAction, animationActions) {
+            activeAction = animationActions[2]
+            activeAction.timeScale = 1;
+            activeAction.setLoop(THREE.LoopOnce)
+            activeAction.clampWhenFinished = true;
+            activeAction.play()
+            return activeAction
+        },
+        midJump(activeAction, animationActions) {
+            activeAction = animationActions[2]
+            activeAction.setLoop(THREE.LoopRepeat, 100)
+            activeAction.timeScale = -1;
+            activeAction.time = 1;
+            activeAction.paused = true;
+            activeAction.play()
+        },
+        jump(activeAction, mixer, animationActions) {
+            animations.startJump(activeAction, animationActions)
+            mixer.addEventListener("finished", () => {
+                animations.startJump(activeAction, animationActions)
+            })
+        },
+        stopJump(activeAction, animationActions) {
+            activeAction = animationActions[2]
+            activeAction.timeScale = -1;
+            activeAction.play()
+        },
+        idle(activeAction, animationActions) {
+            activeAction = animationActions[1]
+            activeAction.timeScale = 1;
+            activeAction.time = 0;
+            activeAction.play()
+            return activeAction
+        },
+        run(activeAction, animationActions) {
+            activeAction = animationActions[3]
+            activeAction.timeScale = 1;
+            activeAction.time = 0;
+            activeAction.play()
+            return activeAction
+        }
+    }
+    activeAction = animations.idle(activeAction, animationActions)
 
     /*const loader = new GLTFLoader().setPath('models/');
     var gltf = await loader.loadAsync('player.glb')*/
@@ -102,7 +144,7 @@ async function createPlayer(scene, physicsWorld, camera, STATE, rigidBodies, ren
 
     console.log(player)
 
-    return {player, controls, mixer, activeAction, modelReady, animationActions};
+    return {player, controls, mixer, animations, activeAction, modelReady, animationActions};
 }
 
 export default createPlayer;

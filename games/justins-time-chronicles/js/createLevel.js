@@ -5,8 +5,8 @@ async function createLevel(scene, physicsWorld) {
     let quat = { x: 0, y: 0, z: 0, w: 1 };
     let mass = 0;
 
-    const loader = new GLTFLoader().setPath('models/obj_test/');
-    var gltf = await loader.loadAsync('cave12.glb')
+    const loader = new GLTFLoader().setPath('models/');
+    var gltf = await loader.loadAsync('cave.glb')
     //var gltf = await loader.loadAsync('temple.glb')
     let level = gltf.scene
 
