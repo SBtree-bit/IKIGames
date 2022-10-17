@@ -54,11 +54,13 @@ body {
     height: 4%;
 }
 
+@media (pointer:none), (pointer:coarse) {
+
 #jumpButton {
     position:absolute;
     top: 95%;
     border: solid 1px black;
-    border-radius: 50px;
+    border-radius: 10px;
     background-color: white;
     left: 45%;
     -webkit-user-select: none; /* Safari */        
@@ -67,18 +69,32 @@ body {
     user-select: none; /* Standard */
 }
 
-#joystick {
-    position: absolute;
-    float: right;
-    width: 12.8%;
-    height: 12.8%;
-    border-radius: 50px;
-    top: 87.2%;
-    left: 55%
-}
+#switchButton {
+    position:absolute;
+    top: 95%;
+    border: solid 1px black;
+    border-radius: 10px;
+    background-color: white;
+    left: 35%;
+    -webkit-user-select: none; /* Safari */        
+        -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* IE10+/Edge */
+        user-select: none; /* Standard */
+    }
 
-#mobileUI {
-    /*position: absolute;*/
-    left: 0;
-    /*top: 50%;*/
+    #joystick {
+        position: absolute;
+        float: right;
+        width: 12.8%;
+        height: 12.8%;
+        border-radius: 50px;
+        top: 87.2%;
+        left: 55%
+    } 
+
+    #mobileUI {
+        /*position: absolute;*/
+        left: 0;
+        /*top: 50%;*/
+    }
 }

@@ -47,13 +47,16 @@ function renderFrame() {
         cameraOBJ.current = camera;
     }
 
-    /*player.rotation.y = fpCamera.rotation.y
-    player.children[0].rotation.y = fpCamera.rotation.y
+    //player.rotation.y = fpCamera.rotation.y
+    player.children[0].rotation.copy(fpCamera.rotation)
+    /*player.children[0].rotation.x = 0;
+    player.children[0].rotation.z = 0;
     
     /*camera.position.x = player.position.x;
     camera.position.y = player.position.y;
     camera.position.z = player.position.z - 1;
     player.rotation.set(camera.rotation);*/
+    //player.rotation.set(fpCamera.rotation)
     //player.children[0].rotation.y = 90
     //controls.target.set(player.position.x, player.position.y, player.position.z)
     var tmpPos = new THREE.Vector3()
@@ -140,9 +143,9 @@ function moveBall() {
         fpCamera.getWorldDirection(direction)
         direction = direction.multiplyScalar(3)
         tpCamera.position.set(fpCamera.position.x, fpCamera.position.y, fpCamera.position.z)
-        tpCamera.position.x -= direction.x;
-        tpCamera.position.y -= direction.y;
-        tpCamera.position.z -= direction.z;
+        tpCamera.position.x += direction.x;
+        tpCamera.position.y += direction.y;
+        tpCamera.position.z += direction.z;
         tpCamera.lookAt(fpCamera.position)
         let scalingFactor = 20;
 
@@ -155,23 +158,23 @@ function moveBall() {
         /*if (moveY == 1) {
             console.log(1)
             //animations.midJump(activeAction, animationActions)
-        }*/
+        }
 
         let resultantImpulse = new Ammo.btVector3(0, moveY, 0)
-        resultantImpulse.op_mul(scalingFactor);
-        physicsBody.setLinearVelocity(resultantImpulse);
-        if (animationState == "run" && moveZ < 1) {activeAction.stop(); animations.idle(activeAction, animationActions); animationState = "idle";} 
-        if (Math.round(moveZ) == 0 && Math.round(moveX) == 0) { return};
-        activeAction.stop()
-        if(animationState != "run" && moveZ > 0) {activeAction = animations.run(activeAction, animationActions); animationState = "run"}
+        resultantImpulse.op_mul(20);
+        physicsBody.setLinearVelocity(resultantImpulse);*/
+        //if (animationState == "run" && moveZ < 1) {activeAction.stop(); animations.run(activeAction, animationActions); animationState = "idle";} 
+        if (moveZ == 0 && moveX == 0) { return};
+        //activeAction.stop()
+        //if(animationState != "run" && moveZ > 0) {activeAction = animations.run(activeAction, animationActions); animationState = "run"}
         var direction = new THREE.Vector3()
         //player.rotation.y = 100
-        console.log(moveZ)
         camera.getWorldDirection(direction)
         direction = direction.multiplyScalar(moveZ)
         var velocity = player.userData.physicsBody.getLinearVelocity()
-        player.userData.physicsBody.setGravity(new Ammo.btVector3(0, -500, 0))
-        player.userData.physicsBody.setLinearVelocity(new Ammo.btVector3(direction.x + velocity.x(), velocity.y(), direction.z + velocity.z()))
+        //player.userData.physicsBody.setGravity(new Ammo.btVector3(0, 0, 0))
+        velocity = new Ammo.btVector3(direction.x + velocity.x(), direction.y + velocity.y(), direction.z + velocity.z())
+        player.userData.physicsBody.setLinearVelocity(velocity.op_mul(0.5))
         /*direction.y = 0;
         player.position.add(direction.multiplyScalar(0.1))
         physicsWorld.stepSimulation(clock.getDelta())

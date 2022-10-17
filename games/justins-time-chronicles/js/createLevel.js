@@ -6,9 +6,10 @@ async function createLevel(scene, physicsWorld) {
     let mass = 0;
 
     const loader = new GLTFLoader().setPath('models/');
-    var gltf = await loader.loadAsync('cave.glb')
+    var gltf = await loader.loadAsync('road.glb')
     //var gltf = await loader.loadAsync('temple.glb')
     let level = gltf.scene
+    scene.add(level)
 
     level.position.set(pos.x, pos.y, pos.z);
 
@@ -16,7 +17,7 @@ async function createLevel(scene, physicsWorld) {
 
     for (var i = 0; i < level.children.length; i++) {
         let item = level.children[i];
-        scene.add(item)
+        //scene.add(item)
         if (item.geometry) {
             let transform = new Ammo.btTransform();
             transform.setIdentity()
@@ -75,7 +76,8 @@ async function createLevel(scene, physicsWorld) {
             let body = new Ammo.btRigidBody(rbInfo);
             body.threeObject = item;
 
-            physicsWorld.addRigidBody(body);
+            //physicsWorld.addRigidBody(body);
+            console.log(body)
         } else {
             console.log("no geometry")
             console.log(item)
