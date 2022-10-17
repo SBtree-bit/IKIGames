@@ -135,6 +135,10 @@ async function start() {
     //createJointObjects()
     setupEventHandlers(moveDirection, cameraOBJ, fpCamera, tpCamera, animations, activeAction, animationActions, mixer)
     renderFrame()
+    document.querySelector(".loader").style.animation = "fadeOut 1s";
+    document.querySelector(".loader").addEventListener("animationend", function() {
+        document.querySelector(".loader").style.display = "none";
+    })
     /*var bigBlock = bigBlockTest(Ammo, scene, physicsWorld);
     rigidBodies.push(bigBlock);*/
     //({ animationActions, mixer, activeAction, modelReady } = await loadModels("models/player/AJ.fbx", ["models/player/AJ@idle.fbx"]))
