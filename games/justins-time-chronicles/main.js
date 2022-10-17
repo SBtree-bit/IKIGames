@@ -17,7 +17,7 @@ import bigBlockTest from './js/bigBlockTest.js'
 
 
 //variable declaration
-let physicsWorld, scene, stats, fpCamera, tpCamera, cameraOBJ = {current: undefined, set: false}, camera, renderer, controls, clock, rigidBodies = [], tmpTrans;
+let physicsWorld, scene, stats, fpCamera, tpCamera, cameraOBJ = { current: undefined, set: false }, camera, renderer, controls, clock, rigidBodies = [], tmpTrans;
 let colGroupPlane = 1, colGroupRedBall = 2, colGroupGreenBall = 4;
 let player;
 let commands;
@@ -70,11 +70,20 @@ function renderFrame() {
     //controls.update()
     updatePhysics(deltaTime);
     stats.update();
+    fpCamera.position.copy(player.position)
+    var direction = new THREE.Vector3()
+    fpCamera.getWorldDirection(direction)
+    direction = direction.multiplyScalar(3)
+    tpCamera.position.set(fpCamera.position.x, fpCamera.position.y, fpCamera.position.z)
+    tpCamera.position.x += direction.x;
+    tpCamera.position.y += direction.y;
+    tpCamera.position.z += direction.z;
+    tpCamera.lookAt(fpCamera.position)
     renderer.render(scene, camera);
     socket.emit("update position", { x: player.position.x, y: player.position.y, z: player.position.z })
     socket.emit("get players")
     mixer.update(deltaTime)
-    
+
     requestAnimationFrame(renderFrame);
 }
 
@@ -138,15 +147,6 @@ function moveBall() {
     if (moveDirection.stop) {
         physicsBody.setLinearVelocity(new Ammo.btVector3(0, 0, 0))
     } else {
-        fpCamera.position.copy(player.position)
-        var direction = new THREE.Vector3()
-        fpCamera.getWorldDirection(direction)
-        direction = direction.multiplyScalar(3)
-        tpCamera.position.set(fpCamera.position.x, fpCamera.position.y, fpCamera.position.z)
-        tpCamera.position.x += direction.x;
-        tpCamera.position.y += direction.y;
-        tpCamera.position.z += direction.z;
-        tpCamera.lookAt(fpCamera.position)
         let scalingFactor = 20;
 
         let moveY = moveDirection.up - moveDirection.down;
@@ -164,7 +164,7 @@ function moveBall() {
         resultantImpulse.op_mul(20);
         physicsBody.setLinearVelocity(resultantImpulse);*/
         //if (animationState == "run" && moveZ < 1) {activeAction.stop(); animations.run(activeAction, animationActions); animationState = "idle";} 
-        if (moveZ == 0 && moveX == 0) { return};
+        if (moveZ == 0 && moveX == 0) { return };
         //activeAction.stop()
         //if(animationState != "run" && moveZ > 0) {activeAction = animations.run(activeAction, animationActions); animationState = "run"}
         var direction = new THREE.Vector3()
@@ -234,7 +234,7 @@ function detectCollision() {
 
             let worldPos0 = contactPoint.get_m_positionWorldOnA();
             let worldPos1 = contactPoint.get_m_positionWorldOnB();
-            
+
             let stopVector = new Ammo.btVector3(0, -20, 0)
             rb0.setLinearVelocity(new Ammo.btVector3(0, 0, 0))
             rb1.setLinearVelocity(new Ammo.btVector3(0, 0, 0))

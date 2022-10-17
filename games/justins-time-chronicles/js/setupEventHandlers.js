@@ -2,9 +2,9 @@ import getControls from "./gamepad.js";
 import * as THREE from 'three';
 import joystick from './joystick.js';
 
-function setupEventHandlers(moveDirection, camera, fpCamera, tpCamera, animations, activeAction, animationActions, mixer) {
+function setupEventHandlers(moveDirection, camera, fpCamera, tpCamera, tpbCamera, animations, activeAction, animationActions, mixer) {
 
-    window.addEventListener('keydown', (event) => { handleKeyDown(event, moveDirection, camera, fpCamera, tpCamera, animations, activeAction, animationActions, mixer) }, false);
+    window.addEventListener('keydown', (event) => { handleKeyDown(event, moveDirection, camera, fpCamera, tpCamera, tpbCamera, animations, activeAction, animationActions, mixer) }, false);
     window.addEventListener('keyup', (event) => { handleKeyUp(event, moveDirection) }, false);
 
     setInterval(() => { gamepadControls(moveDirection, fpCamera, tpCamera, camera) }, 50)
