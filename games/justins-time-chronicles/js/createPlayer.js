@@ -149,8 +149,6 @@ async function createPlayer(scene, physicsWorld, camera, STATE, rigidBodies, ren
     player.userData.physicsBody = body;
     rigidBodies.push(player);
 
-    console.log(player)
-
     return {player, controls, mixer, animations, activeAction, modelReady, animationActions};
 }
 

@@ -1,23 +1,47 @@
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 async function createLevel(scene, physicsWorld) {
-    let pos = { x: -1, y: -5, z: 0 };
-    let quat = { x: 0, y: 0, z: 0, w: 1 };
-    let mass = 0;
 
-    const loader = new GLTFLoader().setPath('models/');
-    var gltf = await loader.loadAsync('road.glb')
-    //var gltf = await loader.loadAsync('temple.glb')
-    let level = gltf.scene
-    scene.add(level)
+    const levelFile = await (await fetch("models/levels/simple/simple.json")).json()
 
-    level.position.set(pos.x, pos.y, pos.z);
+    const loader = new GLTFLoader();
+    var gltf = await loader.loadAsync(levelFile.model)
+    scene.add(gltf.scene)
 
-    level.castShadow = true;
+    for (var i = 0; i < levelFile.colliders.length; i++) {
+        var collider = levelFile.colliders[i]
+        let transform = new Ammo.btTransform()
+        transform.setIdentity()
+        var pos = collider.position
+        var rot = collider.rotation
+        transform.setOrigin(new Ammo.btVector3(pos.x, pos.y, pos.z))
+        transform.setRotation(new Ammo.btQuaternion(rot.x, rot.y, rot.z, 0))
+        let motionState = new Ammo.btDefaultMotionState(transform);
 
-    for (var i = 0; i < level.children.length; i++) {
-        let item = level.children[i];
-        //scene.add(item)
+        let colShape;
+        let scale = collider.scale;
+        switch (collider.type) {
+            case "box":
+                colShape = new Ammo.btBoxShape(new Ammo.btVector3(scale.x, scale.y, scale.z))
+                return
+        }
+        colShape.setMargin(0.05)
+
+        let localInertia = new Ammo.btVector3(0, 0, 0);
+        colShape.calculateLocalInertia(0, localInertia);
+
+        let rbInfo = new Ammo.btRigidBodyConstructionInfo(mass, motionState, colShape, localInertia);
+        let body = new Ammo.btRigidBody(rbInfo);
+
+        body.setFriction(4);
+        body.setRollingFriction(10);
+
+        physicsWorld.addRigidBody(body);
+        console.log(body)
+    }
+
+    /*level.traverse(function (item) {
+        scene.add(item)
         if (item.geometry) {
             let transform = new Ammo.btTransform();
             transform.setIdentity()
@@ -76,12 +100,12 @@ async function createLevel(scene, physicsWorld) {
             let body = new Ammo.btRigidBody(rbInfo);
             body.threeObject = item;
 
-            //physicsWorld.addRigidBody(body);
+            physicsWorld.addRigidBody(body);
             console.log(body)
         } else {
             console.log("no geometry")
             console.log(item)
         }
-    }
+    })*/
 }
 export default createLevel;
