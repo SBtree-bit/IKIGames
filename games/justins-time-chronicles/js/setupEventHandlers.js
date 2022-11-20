@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import getControls from "./gamepad.js";
 import * as THREE from 'three';
 import joystick from './joystick.js';
@@ -58,10 +59,22 @@ function gamepadControls(moveDirection, fpCamera,tpCamera,camera) {
 
 function handleKeyDown(event, moveDirection, camera, fpCamera, tpCamera, animations, activeAction, animationActions, mixer) {
     //location.replace("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+=======
+
+
+function setupEventHandlers(moveDirection){
+
+    window.addEventListener( 'keydown', (event) => {handleKeyDown(event, moveDirection)}, false);
+    window.addEventListener( 'keyup', (event) => {handleKeyUp(event, moveDirection)}, false);
+}
+
+
+function handleKeyDown(event, moveDirection){
+>>>>>>> parent of 1ec4a19 (l)
 
     let keyCode = event.keyCode;
 
-    switch (keyCode) {
+    switch(keyCode){
 
         case 70:
             console.log(camera.current)
@@ -93,7 +106,7 @@ function handleKeyDown(event, moveDirection, camera, fpCamera, tpCamera, animati
         case 68: //D: RIGHT
             moveDirection.right = 0.1
             break;
-
+        
         case 32:
             activeAction = animations.startJump(activeAction, animationActions)
             moveDirection.up = 1
@@ -114,10 +127,10 @@ function handleKeyDown(event, moveDirection, camera, fpCamera, tpCamera, animati
 }
 
 
-function handleKeyUp(event, moveDirection) {
+function handleKeyUp(event, moveDirection){
     let keyCode = event.keyCode;
 
-    switch (keyCode) {
+    switch(keyCode){
         case 87: //FORWARD
             moveDirection.forward = 0
             break;
@@ -141,7 +154,7 @@ function handleKeyUp(event, moveDirection) {
         case 16:
             moveDirection.down = 0;
             break;
-
+        
         case 13:
             moveDirection.stop = false;
             break;

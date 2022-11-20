@@ -4,13 +4,17 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { ColladaLoader } from 'three/addons/loaders/ColladaLoader.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-async function createPlayer(scene, physicsWorld, camera, STATE, rigidBodies, renderer, loadModels) {
+async function createPlayer(scene, physicsWorld, camera, STATE, rigidBodies, renderer) {
     let pos = { x: 0, y: 0, z: 0 };
     let quat = { x: 0, y: 0, z: 0, w: 1 };
     let mass = 1;
 
+    const loader = new GLTFLoader().setPath('models/');
+    var gltf = await loader.loadAsync('player.glb')
     let player = new THREE.Group()
+    player.add(gltf.scene.children[0])
 
+<<<<<<< HEAD
     console.log(player)
 
     let {mixer, activeAction, modelReady, animationActions, object} = await loadModels("models/player/Aj.fbx", ["models/player/Aj@idle.fbx","models/player/Aj@jump.fbx", "models/player/Aj@run.fbx"])
@@ -71,12 +75,18 @@ async function createPlayer(scene, physicsWorld, camera, STATE, rigidBodies, ren
     controls.enableRotate = false
     controls.enablePan = false;
     controls.enableZoom = false;*/
+=======
+    scene.add(player);
+
+    let controls = new PointerLockControls(camera, renderer.domElement)
+>>>>>>> parent of 1ec4a19 (l)
 
     
     document.querySelector("#game").onclick = function() {
         controls.lock()
     }
 
+    
     let transform = new Ammo.btTransform();
     transform.setIdentity();
     transform.setOrigin(new Ammo.btVector3(pos.x, pos.y, pos.z));
@@ -86,8 +96,7 @@ async function createPlayer(scene, physicsWorld, camera, STATE, rigidBodies, ren
 
 
     let triangle, triangle_mesh = new Ammo.btTriangleMesh;
-    var geometry = new THREE.BoxGeometry()
-    if (!geometry) return {player, controls, mixer, activeAction, modelReady, animationActions};
+    var geometry = player.children[0].geometry
     //new ammo vectors
     let vectA = new Ammo.btVector3(0, 0, 0);
     let vectB = new Ammo.btVector3(0, 0, 0);
@@ -144,7 +153,11 @@ async function createPlayer(scene, physicsWorld, camera, STATE, rigidBodies, ren
 
     console.log(player)
 
+<<<<<<< HEAD
     return {player, controls, mixer, animations, activeAction, modelReady, animationActions};
+=======
+    return {player, controls};
+>>>>>>> parent of 1ec4a19 (l)
 }
 
 export default createPlayer;

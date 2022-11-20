@@ -45,13 +45,14 @@ body {
     display: inline;
 }
 
-#closeButton {
+.material-symbols-outlined {
     float: right;
 }
 
 #commandHeader {
     border-bottom: 1px solid green;
     height: 4%;
+<<<<<<< HEAD
 }
 
 #jumpButton {
@@ -81,4 +82,6 @@ body {
     /*position: absolute;*/
     left: 0;
     /*top: 50%;*/
+=======
+>>>>>>> parent of 1ec4a19 (l)
 }
