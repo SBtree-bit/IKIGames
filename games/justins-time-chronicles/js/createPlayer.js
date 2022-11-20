@@ -14,7 +14,6 @@ async function createPlayer(scene, physicsWorld, camera, STATE, rigidBodies, ren
     let player = new THREE.Group()
     player.add(gltf.scene.children[0])
 
-<<<<<<< HEAD
     console.log(player)
 
     let {mixer, activeAction, modelReady, animationActions, object} = await loadModels("models/player/Aj.fbx", ["models/player/Aj@idle.fbx","models/player/Aj@jump.fbx", "models/player/Aj@run.fbx"])
@@ -75,11 +74,6 @@ async function createPlayer(scene, physicsWorld, camera, STATE, rigidBodies, ren
     controls.enableRotate = false
     controls.enablePan = false;
     controls.enableZoom = false;*/
-=======
-    scene.add(player);
-
-    let controls = new PointerLockControls(camera, renderer.domElement)
->>>>>>> parent of 1ec4a19 (l)
 
     
     document.querySelector("#game").onclick = function() {
@@ -153,11 +147,7 @@ async function createPlayer(scene, physicsWorld, camera, STATE, rigidBodies, ren
 
     console.log(player)
 
-<<<<<<< HEAD
     return {player, controls, mixer, animations, activeAction, modelReady, animationActions};
-=======
-    return {player, controls};
->>>>>>> parent of 1ec4a19 (l)
 }
 
 export default createPlayer;
