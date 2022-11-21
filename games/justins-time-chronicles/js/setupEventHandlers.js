@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import getControls from "./gamepad.js";
 import * as THREE from 'three';
 import joystick from './joystick.js';
@@ -59,18 +58,6 @@ function gamepadControls(moveDirection, fpCamera,tpCamera,camera) {
 
 function handleKeyDown(event, moveDirection, camera, fpCamera, tpCamera, animations, activeAction, animationActions, mixer) {
     //location.replace("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
-=======
-
-
-function setupEventHandlers(moveDirection){
-
-    window.addEventListener( 'keydown', (event) => {handleKeyDown(event, moveDirection)}, false);
-    window.addEventListener( 'keyup', (event) => {handleKeyUp(event, moveDirection)}, false);
-}
-
-
-function handleKeyDown(event, moveDirection){
->>>>>>> parent of 1ec4a19 (l)
 
     let keyCode = event.keyCode;
 
