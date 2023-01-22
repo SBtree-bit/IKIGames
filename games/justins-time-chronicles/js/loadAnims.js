@@ -1,16 +1,16 @@
 import * as THREE from 'three';
 import {FBXLoader} from 'three/addons/loaders/FBXLoader.js';
-async function loadModels(playerURL, animationURLS, mixer, activeAction, scene, modelReady) {
+async function loadModels(playerURL, animationURLS, scene) {
     var fbxLoader = new FBXLoader();
     var object = await fbxLoader.loadAsync(playerURL)
     object.scale.set(0.01, 0.01, 0.01);
-    let activeAction = object.animations[0];
+    //let activeAction = object.animations[0];
     var animationActions = [];
-    mixer = new THREE.AnimationMixer(object);
+    let mixer = new THREE.AnimationMixer(object);
     console.log(mixer)
-    animationAction = mixer.clipAction(object.animations[0]);
+    let animationAction = mixer.clipAction(object.animations[0]);
     animationActions.push(animationAction);
-    activeAction = animationActions[0];
+    let activeAction = animationActions[0];
     scene.add(object);
     //add an animation from another file
     /*fbxLoader.load(animationURLS[0], function (object) {
@@ -47,15 +47,10 @@ async function loadModels(playerURL, animationURLS, mixer, activeAction, scene, 
     });*/
     for (var i = 0; i < animationURLS.length; i++) {
         let object1 = await fbxLoader.loadAsync(animationURLS[i]);
-        var animationAction = mixer.clipAction(object1.animations[0]);
+        animationAction = mixer.clipAction(object1.animations[0]);
         animationActions.push(animationAction);
     }
-<<<<<<< HEAD
     let modelReady = true;
     return {animationActions, mixer, activeAction, modelReady, object}
-=======
-    modelReady = true;
-    return {animationActions, mixer, activeAction, modelReady}
->>>>>>> parent of 1ec4a19 (l)
 }
 export default loadModels;

@@ -3,20 +3,24 @@ import { PointerLockControls } from 'three/addons/controls/PointerLockControls.j
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { ColladaLoader } from 'three/addons/loaders/ColladaLoader.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import loadAnims from './loadAnims.js'
 
 async function createPlayer(scene, physicsWorld, camera, STATE, rigidBodies, renderer) {
-    let pos = { x: 0, y: 0, z: 0 };
+    let pos = { x: 0, y: 2, z: 0 };
     let quat = { x: 0, y: 0, z: 0, w: 1 };
     let mass = 1;
 
+    let player = new THREE.Group()
     const loader = new GLTFLoader().setPath('models/');
     var gltf = await loader.loadAsync('player.glb')
-    let player = new THREE.Group()
-    player.add(gltf.scene.children[0])
+    let hitbox = gltf.scene.children[0]
+    hitbox.visible = false
+    player.add(hitbox)
+    player.userData.tag = "player"
 
     console.log(player)
 
-    let {mixer, activeAction, modelReady, animationActions, object} = await loadModels("models/player/Aj.fbx", ["models/player/Aj@idle.fbx","models/player/Aj@jump.fbx", "models/player/Aj@run.fbx"])
+    let {mixer, activeAction, modelReady, animationActions, object} = await loadAnims("models/player/Aj.fbx", ["models/player/Aj@idle.fbx","models/player/Aj@jump.fbx", "models/player/Aj@run.fbx"], scene)
     object.position.y -= 0.58;
     player.add(object)
     var animations = {
@@ -84,6 +88,9 @@ async function createPlayer(scene, physicsWorld, camera, STATE, rigidBodies, ren
     let transform = new Ammo.btTransform();
     transform.setIdentity();
     transform.setOrigin(new Ammo.btVector3(pos.x, pos.y, pos.z));
+    player.position.x = pos.x
+    player.position.y = pos.y
+    player.position.z = pos.z
     transform.setRotation(new Ammo.btQuaternion(quat.x, quat.y, quat.z, quat.w));
     let motionState = new Ammo.btDefaultMotionState(transform);
 
@@ -146,6 +153,7 @@ async function createPlayer(scene, physicsWorld, camera, STATE, rigidBodies, ren
     rigidBodies.push(player);
 
     console.log(player)
+    customObjects.player = player
 
     return {player, controls, mixer, animations, activeAction, modelReady, animationActions};
 }

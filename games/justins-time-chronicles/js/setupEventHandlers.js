@@ -1,11 +1,18 @@
 import getControls from "./gamepad.js";
 import * as THREE from 'three';
 import joystick from './joystick.js';
+import { CompressedTextureLoader } from "three";
 
-function setupEventHandlers(moveDirection, camera, fpCamera, tpCamera, animations, activeAction, animationActions, mixer) {
+function setupEventHandlers(moveDirection, camera, fpCamera, tpCamera, playerTrans) {
 
-    window.addEventListener('keydown', (event) => { handleKeyDown(event, moveDirection, camera, fpCamera, tpCamera, animations, activeAction, animationActions, mixer) }, false);
+    window.addEventListener('keydown', (event) => { handleKeyDown(event, moveDirection, camera, fpCamera, tpCamera, playerTrans) }, false);
     window.addEventListener('keyup', (event) => { handleKeyUp(event, moveDirection) }, false);
+    window.addEventListener('mousedown', (event) => {handleMouseDown(event, moveDirection)}, false)
+    window.addEventListener('mouseup', (event) => {handleMouseUp(event, moveDirection)}, false)
+    document.addEventListener("mousemove", (event) => {
+        moveDirection.mouseX = event.clientX;
+        moveDirection.mouseY = event.clientY;
+    })
 
     setInterval(() => { gamepadControls(moveDirection, fpCamera, tpCamera, camera) }, 50)
     console.log(document.querySelector("#joystick"))
@@ -22,6 +29,36 @@ function setupEventHandlers(moveDirection, camera, fpCamera, tpCamera, animation
     function mouseDown() {moveDirection.up = 1;}
     function mouseUp() {moveDirection.up = 0;}
 
+}
+
+function handleMouseDown(event, moveDirection) {
+    if (inventoryState != "items" && inventoryState != "categories")moveDirection.clicked = true
+}
+
+function handleMouseUp(event, moveDirection) {
+    if (inventoryState != "items") moveDirection.clicked = false
+    else {
+        let overElements = document.elementsFromPoint(moveDirection.mouseX, moveDirection.mouseY)
+        try {
+            let arr_val = parseInt(overElements[1].id.replace("slot", "")) - 1
+            console.log(arr_val)
+            if(overElements[1].id == "slotMain") {
+                inventory.mainItems[inventoryCategory] = takenItem
+            }
+            else if (isNaN(arr_val)) throw new TypeError()
+            inventory.slotObj[inventoryCategory][arr_val] = takenItem
+        } catch(e) {
+            console.log(e)
+            if (!takenItem) return
+            if (takenFrom != "main") {
+                inventory.slotObj[inventoryCategory][takenFrom] = takenItem
+            } else {
+                inventory.main[inventoryCategory] = takenItem
+            }
+        } finally {
+            document.getElementById("floating").src = ""
+        }
+    }
 }
 
 function gamepadControls(moveDirection, fpCamera,tpCamera,camera) {
@@ -56,13 +93,25 @@ function gamepadControls(moveDirection, fpCamera,tpCamera,camera) {
 }
 
 
-function handleKeyDown(event, moveDirection, camera, fpCamera, tpCamera, animations, activeAction, animationActions, mixer) {
+function handleKeyDown(event, moveDirection, camera, fpCamera, tpCamera) {
     //location.replace("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
 
     let keyCode = event.keyCode;
+    moveDirection.isStillJumping = false;
+    if (keyCode < 57 && keyCode > 48) {
+        previousHotbarSelected = currentHotbarSelected
+        currentHotbarSelected = keyCode - 48
+        hotbarSelectedChanged = true
+    }
 
     switch(keyCode){
-
+        case 69:
+            if (inventoryState == "categories" || inventoryState == "items") {
+                inventoryState = "disabled"
+            } else {
+                inventoryState = "categories"
+            }
+            break
         case 70:
             console.log(camera.current)
             camera.set = true;
@@ -77,6 +126,12 @@ function handleKeyDown(event, moveDirection, camera, fpCamera, tpCamera, animati
             console.log(camera)
             //camera == fpCamera ? tpCamera : fpCamera
             break;
+        case 72:
+            if (inventoryState == "hotbar") {
+                inventoryState = "disabled"
+            } else {
+                inventoryState = "hotbar"
+            }
 
         case 87: //W: FORWARD
             moveDirection.forward = 10
@@ -95,12 +150,10 @@ function handleKeyDown(event, moveDirection, camera, fpCamera, tpCamera, animati
             break;
         
         case 32:
-            activeAction = animations.startJump(activeAction, animationActions)
+            moveDirection.space = true;
+            if (moveDirection.isStillJumping) break
             moveDirection.up = 1
-            mixer.addEventListener("finished", (e) => {
-                
-                moveDirection.up = 1
-            })
+            moveDirection.isStillJumping = true
             break;
 
         case 16:
@@ -135,6 +188,7 @@ function handleKeyUp(event, moveDirection){
             break;
 
         case 32:
+            moveDirection.space = false
             moveDirection.up = 0;
             break;
 
