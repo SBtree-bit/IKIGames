@@ -6,8 +6,7 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 	<link type="text/css" rel="stylesheet" href="main.css">
-	<link rel="stylesheet"
-		href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
 
 <body>
@@ -62,6 +61,15 @@
 	<script type="module" src="main.js"></script>
 
 	<div id="ui">
+		<span class="material-symbols-outlined" id="settingsButton">
+			settings
+		</span>
+		<div id="settingsUI">
+			<h1 class="settings mainHeading">Settings</h1>
+			<h2 class="settings secondaryHeading">Controls</h2>
+			<h3 class="settings">Keyboard</h3>
+			<h6 class="settings">Moving Forward: <span class="settings control_switcher" id="forward"></span></h6>
+		</div>
 		<div id="commandUI">
 			<div id="commandHeader">Console <span class="material-symbols-outlined" id="closeButton">close</span></div>
 			<div id="commandContent">

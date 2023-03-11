@@ -4,8 +4,9 @@ import joystick from './joystick.js';
 import { CompressedTextureLoader } from "three";
 
 function setupEventHandlers(moveDirection, camera, fpCamera, tpCamera, playerTrans) {
+    moveDirection.control_lookup = {"forward": "w"}
 
-    window.addEventListener('keydown', (event) => { handleKeyDown(event, moveDirection, camera, fpCamera, tpCamera, playerTrans) }, false);
+    window.addEventListener('keydown', (event) => { handleKeyDown(event, moveDirection, camera, fpCamera, tpCamera, playerTrans,moveDirection.control_lookup) }, false);
     window.addEventListener('keyup', (event) => { handleKeyUp(event, moveDirection) }, false);
     window.addEventListener('mousedown', (event) => {handleMouseDown(event, moveDirection)}, false)
     window.addEventListener('mouseup', (event) => {handleMouseUp(event, moveDirection)}, false)
@@ -26,10 +27,54 @@ function setupEventHandlers(moveDirection, camera, fpCamera, tpCamera, playerTra
     document.querySelector("#jumpButton").addEventListener('touchend', mouseUp);
     document.querySelector("#jumpButton").addEventListener('touchcancel', mouseUp);
 
+    document.querySelector("#settingsButton").addEventListener('mousedown', settingsToggle);
+    document.querySelector("#settingsButton").addEventListener('touchstart', settingsToggle);
+    registerControlMenu(moveDirection.control_lookup)
+
+
     function mouseDown() {moveDirection.up = 1;}
     function mouseUp() {moveDirection.up = 0;}
 
+    function settingsToggle() {
+        if (moveDirection.settings) {
+            hideSettings()
+        } else {
+            showSettings()
+        }
+    }
+
+    function showSettings() {
+        document.querySelector("#settingsUI").style.display = "inline"
+        moveDirection.settings = true
+    }
+    function hideSettings() {
+        document.querySelector("#settingsUI").style.display = "none"
+        moveDirection.settings = false
+    }
+
 }
+
+function registerControlMenu(control_lookup) {
+    document.querySelectorAll(".control_switcher").forEach((elem) => {
+        elem.innerHTML = control_lookup[elem.id]
+        elem.onclick = async function() {
+            control_lookup.stop = true
+            let key = await waitingKeypress()
+            control_lookup[this.id] = key
+            this.innerHTML = key
+        }
+    })
+}
+
+function waitingKeypress() {
+    return new Promise((resolve) => {
+      document.addEventListener('keydown', onKeyHandler);
+      function onKeyHandler(e) {
+        document.removeEventListener('keydown', onKeyHandler);
+        resolve(e.key);
+      }
+    });
+  }
 
 function handleMouseDown(event, moveDirection) {
     if (inventoryState != "items" && inventoryState != "categories")moveDirection.clicked = true
@@ -73,6 +118,17 @@ function gamepadControls(moveDirection, fpCamera,tpCamera,camera) {
         if (controls.buttons.includes("ZR") && controls.buttons.includes("ZL")) {moveDirection.stop = true}
         if (controls.buttons.includes("Home")) location.reload()
         if (controls.buttons.includes("+")) {camera.set = true; if (camera.current == tpCamera){ camera.current = fpCamera; moveDirection.hidePlayer = false} else {camera.current = tpCamera; moveDirection.hidePlayer = true}}
+        if (controls.buttons.includes("A")) {
+            moveDirection.space = true;
+            if (moveDirection.isStillJumping) return
+            moveDirection.up = 1
+            moveDirection.isStillJumping = true
+        }
+        if (controls.buttons.includes("B")) {
+            moveDirection.clicked = true
+        } else {
+            moveDirection.clicked = false
+        }
         //camera.rotation.x -= movementY * 0.002;
         //camera.rotation.x = Math.max((Math.PI / 2) - Math.PI, Math.min((Math.PI / 2) - 0, movementY))
         var _euler = new THREE.Euler(0, 0, 0, "YXZ")
@@ -93,9 +149,9 @@ function gamepadControls(moveDirection, fpCamera,tpCamera,camera) {
 }
 
 
-function handleKeyDown(event, moveDirection, camera, fpCamera, tpCamera) {
+function handleKeyDown(event, moveDirection, camera, fpCamera, tpCamera, control_lookup) {
     //location.replace("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
-
+    console.log(moveDirection.control_lookup)
     let keyCode = event.keyCode;
     moveDirection.isStillJumping = false;
     if (keyCode < 57 && keyCode > 48) {
@@ -103,7 +159,16 @@ function handleKeyDown(event, moveDirection, camera, fpCamera, tpCamera) {
         currentHotbarSelected = keyCode - 48
         hotbarSelectedChanged = true
     }
-
+    if(!moveDirection.control_lookup.stop) {
+        console.log(moveDirection.control_lookup.forward)
+        switch(event.key) {
+            case moveDirection.control_lookup.forward:
+                moveDirection.forward = 10
+                break;
+        }
+    } else {
+        moveDirection.control_lookup.stop = false
+    }
     switch(keyCode){
         case 69:
             if (inventoryState == "categories" || inventoryState == "items") {

@@ -3,6 +3,8 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var fs = require('fs');
+
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -24,6 +26,17 @@ app.use(express.static(path.join(__dirname, 'games')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use("/server", serverRouter);
+
+app.post("/authId", function(req,res) {
+  fs.writeFile('./authId.txt', req.body, function (err) {
+    if (err) throw err;
+    console.log('Saved!');
+  });
+})
+
+app.get("/authId", async function(req,res) {
+  res.end(await fs.readFileSync("./authId.txt"))
+})
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

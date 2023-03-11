@@ -91,7 +91,7 @@ html, body {
  
  body {
     font-family: 'Montserrat', sans-serif;
-    background: #00a048;
+    background: #000000;
     font-size: 18px;
  }
  
@@ -286,4 +286,40 @@ html, body {
       max-width: 100%;
    }
 }
-.hover {}
+.hover {
+   
+}
+
+#pauseUI {
+   position:absolute;
+   width: 100%;
+   height: 100%;
+}
+
+#settingsButton {
+   color: #fff;
+   position: absolute;
+   cursor: pointer;
+   -webkit-touch-callout: none;
+   -webkit-user-select: none;
+   -khtml-user-select: none;
+   -moz-user-select: none;
+   -ms-user-select: none;
+   user-select: none;
+}
+
+#settingsUI {
+   display: none;
+   color: white;
+   background-color: black;
+   font-family: Consolas, Courier, monospace;
+   position: absolute;
+   left: 12.5%;
+   top: 12.5%;
+   width: 75%;
+   height: 75%;
+}
+
+.settings {
+   text-align: center;
+}

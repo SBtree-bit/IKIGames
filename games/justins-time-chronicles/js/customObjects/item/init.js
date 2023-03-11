@@ -8,12 +8,13 @@ function updateItem(object, scene, THREE) {
 }
 async function initItemImport(customObjects, Ammo, physicsWorld, rigidBodies, kinematicBodies, scene, THREE, GLTFLoader, pos, props) {
     let types = {
-        "air": { "name": "", "tooltip": "", "maxStackSize": 1, "category": "any", "model": "2023_Snowman.glb"},
-        "button": { "name": "Button", "tooltip": "Button\nA button you press", "icon": "./models/items/speedometer.jpeg", "model": "2023_Snowman.glb" },
-        "speedometer": {"name": "Speedometer", "tooltip": "A perfect item for measuring speed!", "icon": "./models/items/speedometer.jpeg", "model": "2023_Snowman.glb"}
+        "button": { "name": "Button", "tooltip": "A button you press", "icon": "./models/items/speedometer.jpeg", "model": "2023_Snowman.glb" },
+        "speedometer": {"name": "Casing", "tooltip": "The casing for your time machine!", "icon": "./models/items/speedometer.jpeg", "model": "casing.glb"}
     }
     let loader = new GLTFLoader()
     let object = await loader.loadAsync("./js/customObjects/item/" + types[props.item].model)
+    console.log("Item")
+    console.log(object.scene)
     object = object.scene
     console.log(pos)
     object.position.copy(pos)
