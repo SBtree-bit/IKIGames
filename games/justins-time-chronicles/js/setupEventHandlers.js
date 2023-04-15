@@ -1,11 +1,22 @@
 import getControls from "./gamepad.js";
 import * as THREE from 'three';
 import joystick from './joystick.js';
+import { CompressedTextureLoader } from "three";
 
+function setupEventHandlers(moveDirection, camera, fpCamera, tpCamera, playerTrans) {
+    moveDirection.control_lookup = {"forward": "w", "back": "s"}
+
+    window.addEventListener('keydown', (event) => { handleKeyDown(event, moveDirection, camera, fpCamera, tpCamera, playerTrans,moveDirection.control_lookup) }, false);
 function setupEventHandlers(moveDirection, camera, fpCamera, tpCamera, tpbCamera, animations, activeAction, animationActions, mixer) {
 
     window.addEventListener('keydown', (event) => { handleKeyDown(event, moveDirection, camera, fpCamera, tpCamera, tpbCamera, animations, activeAction, animationActions, mixer) }, false);
     window.addEventListener('keyup', (event) => { handleKeyUp(event, moveDirection) }, false);
+    window.addEventListener('mousedown', (event) => {handleMouseDown(event, moveDirection)}, false)
+    window.addEventListener('mouseup', (event) => {handleMouseUp(event, moveDirection)}, false)
+    document.addEventListener("mousemove", (event) => {
+        moveDirection.mouseX = event.clientX;
+        moveDirection.mouseY = event.clientY;
+    })
 
     setInterval(() => { gamepadControls(moveDirection, fpCamera, tpCamera, camera) }, 50)
     console.log(document.querySelector("#joystick"))
@@ -13,6 +24,19 @@ function setupEventHandlers(moveDirection, camera, fpCamera, tpCamera, tpbCamera
         moveDirection.back = y_relative;
         moveDirection.left = x_relative
     })
+    document.querySelector("#jumpButton").addEventListener('mousedown', mouseDown);
+    document.querySelector("#jumpButton").addEventListener('mouseup', mouseUp);
+    document.querySelector("#jumpButton").addEventListener('touchstart', mouseDown);
+    document.querySelector("#jumpButton").addEventListener('touchend', mouseUp);
+    document.querySelector("#jumpButton").addEventListener('touchcancel', mouseUp);
+
+    document.querySelector("#settingsButton").addEventListener('mousedown', settingsToggle);
+    document.querySelector("#settingsButton").addEventListener('touchstart', settingsToggle);
+    registerControlMenu(moveDirection.control_lookup)
+
+
+    function mouseDown() {moveDirection.up = 1;}
+    function mouseUp() {moveDirection.up = 0;}
     document.querySelector("#jumpButton").addEventListener('mousedown', jumpDown);
     document.querySelector("#jumpButton").addEventListener('mouseup', jumpUp);
     document.querySelector("#jumpButton").addEventListener('touchstart', jumpDown);
@@ -35,6 +59,76 @@ function setupEventHandlers(moveDirection, camera, fpCamera, tpCamera, tpbCamera
         }
     }
 
+    function settingsToggle() {
+        if (moveDirection.settings) {
+            hideSettings()
+        } else {
+            showSettings()
+        }
+    }
+
+    function showSettings() {
+        document.querySelector("#settingsUI").style.display = "inline"
+        moveDirection.settings = true
+    }
+    function hideSettings() {
+        document.querySelector("#settingsUI").style.display = "none"
+        moveDirection.settings = false
+    }
+
+}
+
+function registerControlMenu(control_lookup) {
+    document.querySelectorAll(".control_switcher").forEach((elem) => {
+        elem.innerHTML = control_lookup[elem.id]
+        elem.onclick = async function() {
+            control_lookup.stop = true
+            let key = await waitingKeypress()
+            console.log(key)
+            control_lookup[this.id] = key
+            this.innerHTML = key
+        }
+    })
+}
+
+function waitingKeypress() {
+    return new Promise((resolve) => {
+      document.addEventListener('keydown', onKeyHandler);
+      function onKeyHandler(e) {
+        document.removeEventListener('keydown', onKeyHandler);
+        resolve(e.key);
+      }
+    });
+  }
+
+function handleMouseDown(event, moveDirection) {
+    if (inventoryState != "items" && inventoryState != "categories")moveDirection.clicked = true
+}
+
+function handleMouseUp(event, moveDirection) {
+    if (inventoryState != "items") moveDirection.clicked = false
+    else {
+        let overElements = document.elementsFromPoint(moveDirection.mouseX, moveDirection.mouseY)
+        try {
+            let arr_val = parseInt(overElements[1].id.replace("slot", "")) - 1
+            console.log(arr_val)
+            if(overElements[1].id == "slotMain") {
+                inventory.mainItems[inventoryCategory] = takenItem
+            }
+            else if (isNaN(arr_val)) throw new TypeError()
+            inventory.slotObj[inventoryCategory][arr_val] = takenItem
+        } catch(e) {
+            console.log(e)
+            if (!takenItem) return
+            if (takenFrom != "main") {
+                inventory.slotObj[inventoryCategory][takenFrom] = takenItem
+            } else {
+                inventory.main[inventoryCategory] = takenItem
+            }
+        } finally {
+            document.getElementById("floating").src = ""
+        }
+    }
 }
 
 function gamepadControls(moveDirection, fpCamera,tpCamera,camera) {
@@ -49,6 +143,17 @@ function gamepadControls(moveDirection, fpCamera,tpCamera,camera) {
         if (controls.buttons.includes("ZR") && controls.buttons.includes("ZL")) {moveDirection.stop = true}
         if (controls.buttons.includes("Home")) location.reload()
         if (controls.buttons.includes("+")) {camera.set = true; if (camera.current == tpCamera){ camera.current = fpCamera; moveDirection.hidePlayer = false} else {camera.current = tpCamera; moveDirection.hidePlayer = true}}
+        if (controls.buttons.includes("A")) {
+            moveDirection.space = true;
+            if (moveDirection.isStillJumping) return
+            moveDirection.up = 1
+            moveDirection.isStillJumping = true
+        }
+        if (controls.buttons.includes("B")) {
+            moveDirection.clicked = true
+        } else {
+            moveDirection.clicked = false
+        }
         //camera.rotation.x -= movementY * 0.002;
         //camera.rotation.x = Math.max((Math.PI / 2) - Math.PI, Math.min((Math.PI / 2) - 0, movementY))
         var _euler = new THREE.Euler(0, 0, 0, "YXZ")
@@ -69,13 +174,37 @@ function gamepadControls(moveDirection, fpCamera,tpCamera,camera) {
 }
 
 
-function handleKeyDown(event, moveDirection, camera, fpCamera, tpCamera, animations, activeAction, animationActions, mixer) {
+function handleKeyDown(event, moveDirection, camera, fpCamera, tpCamera, control_lookup) {
     //location.replace("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
-
+    console.log(moveDirection.control_lookup)
     let keyCode = event.keyCode;
-
-    switch (keyCode) {
-
+    moveDirection.isStillJumping = false;
+    if (keyCode < 57 && keyCode > 48) {
+        previousHotbarSelected = currentHotbarSelected
+        currentHotbarSelected = keyCode - 48
+        hotbarSelectedChanged = true
+    }
+    if(!moveDirection.control_lookup.stop) {
+        console.log(moveDirection.control_lookup.forward)
+        switch(event.key) {
+            case moveDirection.control_lookup.forward:
+                moveDirection.forward = 10
+                break;
+            case moveDirection.control_lookup.back:
+                moveDirection.back = 10
+                break;
+        }
+    } else {
+        moveDirection.control_lookup.stop = false
+    }
+    switch(keyCode){
+        case 69:
+            if (inventoryState == "categories" || inventoryState == "items") {
+                inventoryState = "disabled"
+            } else {
+                inventoryState = "categories"
+            }
+            break
         case 70:
             console.log(camera.current)
             camera.set = true;
@@ -90,6 +219,12 @@ function handleKeyDown(event, moveDirection, camera, fpCamera, tpCamera, animati
             console.log(camera)
             //camera == fpCamera ? tpCamera : fpCamera
             break;
+        case 72:
+            if (inventoryState == "hotbar") {
+                inventoryState = "disabled"
+            } else {
+                inventoryState = "hotbar"
+            }
 
         case 87: //W: FORWARD
             moveDirection.forward = 100
@@ -106,8 +241,12 @@ function handleKeyDown(event, moveDirection, camera, fpCamera, tpCamera, animati
         case 68: //D: RIGHT
             moveDirection.right = 0.1
             break;
-
+        
         case 32:
+            moveDirection.space = true;
+            if (moveDirection.isStillJumping) break
+            moveDirection.up = 1
+            moveDirection.isStillJumping = true
             //activeAction = animations.startJump(activeAction, animationActions)
             moveDirection.up = 1
             /*mixer.addEventListener("finished", (e) => {
@@ -119,25 +258,28 @@ function handleKeyDown(event, moveDirection, camera, fpCamera, tpCamera, animati
         case 16:
             moveDirection.down = 1;
             break;
-
-        case 13:
-            moveDirection.stop = true;
-            break;
     }
 }
 
 
-function handleKeyUp(event, moveDirection) {
+function handleKeyUp(event, moveDirection){
     let keyCode = event.keyCode;
 
-    switch (keyCode) {
-        case 87: //FORWARD
-            moveDirection.forward = 0
-            break;
+    if(!moveDirection.control_lookup.stop) {
+        console.log(moveDirection.control_lookup.forward)
+        switch(event.key) {
+            case moveDirection.control_lookup.forward:
+                moveDirection.forward = 0
+                break;
+            case moveDirection.control_lookup.back:
+                moveDirection.back = 0;
+                break;
+        }
+    } else {
+        moveDirection.control_lookup.stop = false
+    }
 
-        case 83: //BACK
-            moveDirection.back = 0
-            break;
+    switch(keyCode){
 
         case 65: //LEFT
             moveDirection.left = 0
@@ -148,15 +290,12 @@ function handleKeyUp(event, moveDirection) {
             break;
 
         case 32:
+            moveDirection.space = false
             moveDirection.up = 0;
             break;
 
         case 16:
             moveDirection.down = 0;
-            break;
-
-        case 13:
-            moveDirection.stop = false;
             break;
     }
 

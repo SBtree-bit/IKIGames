@@ -21,9 +21,13 @@ import loadModels from '../js/loadAnims.js';
     var activeAction;
     var lastAction;
     var mixer;
+<<<<<<< HEAD
     var object;
     ({animationActions, mixer, activeAction, modelReady, object} = await loadModels('models/vanguard_t_choonyung.fbx', ['models/vanguard@samba.fbx', 'models/vanguard@bellydance.fbx', 'models/vanguard@idle.fbx']))
     scene.add(object)
+=======
+    ({animationActions, mixer, activeAction, modelReady} = await loadModels('models/vanguard_t_choonyung.fbx', ['models/vanguard@samba.fbx', 'models/vanguard@bellydance.fbx', 'models/vanguard@idle.fbx'], mixer, activeAction, scene, modelReady))
+>>>>>>> parent of 1ec4a19 (l)
     console.log(mixer)
     window.addEventListener('resize', onWindowResize, false);
     function onWindowResize() {

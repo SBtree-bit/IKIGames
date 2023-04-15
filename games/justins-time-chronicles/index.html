@@ -1,22 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-<<<<<<< HEAD
-=======
-	<head>
-		<base href="http://localhost:3000/justins-time-chronicles/index.html">
-		<title>Justin's Time Chronicles</title>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-		<link type="text/css" rel="stylesheet" href="main.css">
-		<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
-	</head>
->>>>>>> parent of 60955b0 (l)
-
 <head>
 	<title>Justin's Time Chronicles</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 	<link type="text/css" rel="stylesheet" href="main.css">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+
+<body>
 	<link rel="stylesheet"
 		href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
 </head>
@@ -36,7 +28,53 @@
 			}
 		</script>
 	<script src="three/examples/js/libs/ammo.wasm.js"></script>
+	<script>
+		var updateScripts = []
+		var updateScriptsLoaded = false
+		var startScripts = []
+		var startScriptsLoaded = false
+		var customTypes = []
+		var customTypesLoaded = false
+		let customObjects = {
+			"all": [],
+			"slidingDoors": {
+				"update": undefined,
+				"objects": []
+			},
+			"buttons": {
+				"update": undefined,
+				"objects": []
+			},
+			"items": {
+				"update": undefined,
+				"objects": []
+			},
+			"platforms": {
+				"update": undefined,
+				"objects": []
+			}
+		}
+		let inventoryState = "disabled"
+		let inventoryCategory = "none"
+		let inventory, itemTypes, takenItem, takenFrom;
+		let mouseX, mouseY;
+		let currentHotbarSelected, previousHotbarSelected, hotbarSelectedChanged;
+	</script>
 
+	<script data-main="requireMain" src="js/require.js" defer></script>
+	<script type="module" src="main.js"></script>
+
+	<div id="ui">
+		<span class="material-symbols-outlined" id="settingsButton">
+			settings
+		</span>
+		<div id="settingsUI">
+			<h1 class="settings mainHeading">Settings</h1>
+			<h2 class="settings secondaryHeading">Controls</h2>
+			<h3 class="settings">Keyboard</h3>
+			<h6 class="settings">Moving Forward: <span class="settings control_switcher" id="forward"></span></h6>
+			<h6 class="settings">Moving Backward: <span class="settings control_switcher" id="back"></span></h6>
+		</div>
 	<script type="module" src="main.js"></script>
 
 	<div id="ui">
@@ -46,6 +84,143 @@
 				<div id="commandText">Enter Command $></div>
 				<input id="commandInput" oninput="console.log(hello)">
 			</div>
+		</div>
+		<div class="layout wrap">
+			<div class="card card-a">
+				<div class="image-container">
+					<svg class="shadow" viewBox="0 0 156 73" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<ellipse id="shadow" cx="78" cy="36.5" rx="78" ry="36.5" fill="#07123C" fill-opacity="0.19" />
+					</svg>
+					<img alt="Bowling Ball" src="https://assets.codepen.io/21542/BowlingBall.2x.png" />
+				</div>
+				<span class="item-title">Other</span>
+			</div>
+
+			<div class="card card-b">
+				<div class="image-container">
+					<svg class="shadow" viewBox="0 0 156 73" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<use href="#shadow" />
+					</svg>
+					<img class="large" alt="Sword" src="https://assets.codepen.io/21542/Sword.4x.png" />
+				</div>
+				<span class="item-title">Attack</span>
+			</div>
+
+			<div class="card card-c">
+				<div class="image-container">
+					<img alt="Shield" src="https://assets.codepen.io/21542/Shield.4x.png" />
+					<svg class="shadow" viewBox="0 0 156 73" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<use href="#shadow" />
+					</svg>
+				</div>
+				<span class="item-title">Defense</span>
+			</div>
+			<div class="card card-d">
+				<div class="image-container">
+					<svg class="shadow" viewBox="0 0 156 73" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<use href="#shadow" />
+					</svg>
+					<img alt="Hat" src="https://assets.codepen.io/21542/Hat.2x.png" />
+				</div>
+				<span class="item-title">Headgear</span>
+			</div>
+
+			<div class="card card-e">
+				<div class="image-container">
+					<svg class="shadow" viewBox="0 0 156 73" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<use href="#shadow" />
+					</svg>
+					<img alt="Box" src="https://assets.codepen.io/21542/Box.2x.png" />
+				</div>
+				<span class="item-title">Crates</span>
+			</div>
+
+			<div class="card card-f">
+				<div class="image-container">
+					<svg class="shadow" viewBox="0 0 156 73" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<use href="#shadow" />
+					</svg>
+					<img alt="Banana" src="https://assets.codepen.io/21542/Banana.2x.png" />
+				</div>
+				<span class="item-title">Food</span>
+			</div>
+
+			<div class="card card-g">
+				<div class="image-container">
+					<svg class="shadow" viewBox="0 0 156 73" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<use href="#shadow" />
+					</svg>
+					<img alt="Gem" src="https://assets.codepen.io/21542/Gem.2x.png" />
+				</div>
+				<span class="item-title">Currency</span>
+			</div>
+			<div class="card card-h">
+				<div class="image-container">
+					<img alt="Purple Rock" src="https://assets.codepen.io/21542/PurpleRock.2x.png" />
+					<svg class="shadow" viewBox="0 0 156 73" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<use href="#shadow" />
+					</svg>
+				</div>
+				<span class="item-title">Materials</span>
+			</div>
+		</div>
+		<div id="containedInventory">
+			<img id="floating" class="floating" alt="" src="" onerror="this.style.display = 'none'">
+			<div class="slot mainSlot" id="slotMain">
+				<img alt="" src=""/>
+			</div>
+			<div class="slot" id="slot1">
+				<img alt="" src=""/>
+			</div>
+			<div class="slot" id="slot2">
+				<img alt="" src=""/>
+			</div>
+			<div class="slot" id="slot3">
+				<img alt="" src=""/>
+			</div>
+			<div class="slot" id="slot4">
+				<img alt="" src=""/>
+			</div>
+			<div class="slot" id="slot5">
+				<img alt="" src=""/>
+			</div>
+		</div>
+		<div id="hotbar">
+			<div class="hotbar selected" id="hotbar1">
+				<img alt="" src=""/>
+			</div>
+			<div class="hotbar" id="hotbar2">
+				<img alt="" src=""/>
+			</div>
+			<div class="hotbar" id="hotbar3">
+				<img alt="" src=""/>
+			</div>
+			<div class="hotbar" id="hotbar4">
+				<img alt="" src=""/>
+			</div>
+			<div class="hotbar" id="hotbar5">
+				<img alt="" src=""/>
+			</div>
+			<div class="hotbar" id="hotbar6">
+				<img alt="" src=""/>
+			</div>
+			<div class="hotbar" id="hotbar7">
+				<img alt="" src=""/>
+			</div>
+			<div class="hotbar" id="hotbar8">
+				<img alt="" src=""/>
+			</div>
+		</div>
+		<div class="hover"></div>
+	</div>
+
+	<div id="game"></div>
+	<div id="mobileUI">
+		<div id="mobileUIFooter">
+			<span class="material-symbols-outlined" id="jumpButton">
+				arrow_upward
+			</span>
+			<canvas id="joystick"></script>
 		</div>
 	</div>
 
