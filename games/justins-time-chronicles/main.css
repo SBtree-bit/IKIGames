@@ -54,11 +54,13 @@ body {
     height: 4%;
 }
 
+@media (pointer:none), (pointer:coarse) {
+
 #jumpButton {
     position:absolute;
     top: 95%;
     border: solid 1px black;
-    border-radius: 50px;
+    border-radius: 10px;
     background-color: white;
     left: 45%;
     -webkit-user-select: none; /* Safari */        
@@ -67,18 +69,49 @@ body {
     user-select: none; /* Standard */
 }
 
-#joystick {
+#switchButton {
+    position:absolute;
+    top: 95%;
+    border: solid 1px black;
+    border-radius: 10px;
+    background-color: white;
+    left: 35%;
+    -webkit-user-select: none; /* Safari */        
+        -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* IE10+/Edge */
+        user-select: none; /* Standard */
+    }
+
+    #joystick {
+        position: absolute;
+        float: right;
+        width: 12.8%;
+        height: 12.8%;
+        border-radius: 50px;
+        top: 87.2%;
+        left: 55%
+    } 
+
+    #mobileUI {
+        /*position: absolute;*/
+        left: 0;
+        /*top: 50%;*/
+    }
+}
+.spinner {
     position: absolute;
-    float: right;
-    width: 12.8%;
-    height: 12.8%;
-    border-radius: 50px;
-    top: 87.2%;
-    left: 55%
+    left:calc(50% - 100px);
+    top:calc(50% - 100px);
+    border: 16px solid #f3f3f3; /* Light grey */
+    border-top: 16px solid green; /* Blue */
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    animation: spin 2s linear infinite;
 }
 
-#mobileUI {
-    /*position: absolute;*/
+.loader {
+    position: absolute;
     left: 0;
     /*top: 50%;*/
 }
@@ -322,4 +355,19 @@ html, body {
 
 .settings {
    text-align: center;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 100;
+    background-color: white;
+}
+  
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeOut {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
 }

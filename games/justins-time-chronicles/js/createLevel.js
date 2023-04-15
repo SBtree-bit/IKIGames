@@ -4,7 +4,6 @@ import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { KTX2Loader } from 'three/addons/loaders/KTX2Loader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 import * as THREE from 'three';
-
 async function createLevel(scene, physicsWorld, renderer, rigidBodies, kinematicBodies, Ammo, customObjects) {
     let pos = { x: -1, y: -5, z: 0 };
     let quat = { x: 0, y: 0, z: 0, w: 1 };
@@ -210,6 +209,47 @@ function addAll(level, scene, physicsWorld) {
     for (var i = 0; i < level.children.length; i++) {
         let item = level.children[i];
         if (!item) continue
+async function createLevel(scene, physicsWorld) {
+
+    const levelFile = await (await fetch("models/levels/simple/simple.json")).json()
+
+    const loader = new GLTFLoader();
+    var gltf = await loader.loadAsync(levelFile.model)
+    scene.add(gltf.scene)
+
+    for (var i = 0; i < levelFile.colliders.length; i++) {
+        var collider = levelFile.colliders[i]
+        let transform = new Ammo.btTransform()
+        transform.setIdentity()
+        var pos = collider.position
+        var rot = collider.rotation
+        transform.setOrigin(new Ammo.btVector3(pos.x, pos.y, pos.z))
+        transform.setRotation(new Ammo.btQuaternion(rot.x, rot.y, rot.z, 0))
+        let motionState = new Ammo.btDefaultMotionState(transform);
+
+        let colShape;
+        let scale = collider.scale;
+        switch (collider.type) {
+            case "box":
+                colShape = new Ammo.btBoxShape(new Ammo.btVector3(scale.x, scale.y, scale.z))
+                return
+        }
+        colShape.setMargin(0.05)
+
+        let localInertia = new Ammo.btVector3(0, 0, 0);
+        colShape.calculateLocalInertia(0, localInertia);
+
+        let rbInfo = new Ammo.btRigidBodyConstructionInfo(mass, motionState, colShape, localInertia);
+        let body = new Ammo.btRigidBody(rbInfo);
+
+        body.setFriction(4);
+        body.setRollingFriction(10);
+
+        physicsWorld.addRigidBody(body);
+        console.log(body)
+    }
+
+    /*level.traverse(function (item) {
         scene.add(item)
         item.userData.tag = "level";
         if (item.geometry) {
@@ -275,10 +315,13 @@ function addAll(level, scene, physicsWorld) {
             console.log(item)
             addAll(item, scene, physicsWorld)
             //addAll(item.parent,scene,physicsWorld)
+            console.log(body)
         } else {
             /*console.log("no geometry")
             console.log(item)
         }
     }
 }*/
+    })*/
+}
 export default createLevel;

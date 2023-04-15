@@ -19,7 +19,6 @@ async function createPlayer(scene, physicsWorld, camera, STATE, rigidBodies, ren
     player.userData.tag = "player"
 
     console.log(player)
-
     let {mixer, activeAction, modelReady, animationActions, object} = await loadAnims("models/player/Aj.fbx", ["models/player/Aj@idle.fbx","models/player/Aj@jump.fbx", "models/player/Aj@run.fbx"], scene)
     object.position.y -= 0.58;
     player.add(object)
@@ -64,9 +63,16 @@ async function createPlayer(scene, physicsWorld, camera, STATE, rigidBodies, ren
             activeAction.time = 0;
             activeAction.play()
             return activeAction
+        },
+        fly(activeAction, animationActions) {
+            activeAction = animationActions[4]
+            activeAction.timeScale = 1;
+            activeAction.time = 0;
+            activeAction.play()
+            return activeAction
         }
     }
-    activeAction = animations.idle(activeAction, animationActions)
+    activeAction = animations.fly(activeAction, animationActions)
 
     /*const loader = new GLTFLoader().setPath('models/');
     var gltf = await loader.loadAsync('player.glb')*/
@@ -151,10 +157,8 @@ async function createPlayer(scene, physicsWorld, camera, STATE, rigidBodies, ren
     body.threeObject = player;
     player.userData.physicsBody = body;
     rigidBodies.push(player);
-
     console.log(player)
     customObjects.player = player
-
     return {player, controls, mixer, animations, activeAction, modelReady, animationActions};
 }
 

@@ -7,6 +7,9 @@ function setupEventHandlers(moveDirection, camera, fpCamera, tpCamera, playerTra
     moveDirection.control_lookup = {"forward": "w", "back": "s"}
 
     window.addEventListener('keydown', (event) => { handleKeyDown(event, moveDirection, camera, fpCamera, tpCamera, playerTrans,moveDirection.control_lookup) }, false);
+function setupEventHandlers(moveDirection, camera, fpCamera, tpCamera, tpbCamera, animations, activeAction, animationActions, mixer) {
+
+    window.addEventListener('keydown', (event) => { handleKeyDown(event, moveDirection, camera, fpCamera, tpCamera, tpbCamera, animations, activeAction, animationActions, mixer) }, false);
     window.addEventListener('keyup', (event) => { handleKeyUp(event, moveDirection) }, false);
     window.addEventListener('mousedown', (event) => {handleMouseDown(event, moveDirection)}, false)
     window.addEventListener('mouseup', (event) => {handleMouseUp(event, moveDirection)}, false)
@@ -19,7 +22,7 @@ function setupEventHandlers(moveDirection, camera, fpCamera, tpCamera, playerTra
     console.log(document.querySelector("#joystick"))
     joystick(document.querySelector("#joystick"), window.innerWidth / 50, 8, 2, 8, 2, function(angle_in_degrees, x, y, speed, x_relative, y_relative) {
         moveDirection.back = y_relative;
-        moveDirection.right = x_relative
+        moveDirection.left = x_relative
     })
     document.querySelector("#jumpButton").addEventListener('mousedown', mouseDown);
     document.querySelector("#jumpButton").addEventListener('mouseup', mouseUp);
@@ -34,6 +37,27 @@ function setupEventHandlers(moveDirection, camera, fpCamera, tpCamera, playerTra
 
     function mouseDown() {moveDirection.up = 1;}
     function mouseUp() {moveDirection.up = 0;}
+    document.querySelector("#jumpButton").addEventListener('mousedown', jumpDown);
+    document.querySelector("#jumpButton").addEventListener('mouseup', jumpUp);
+    document.querySelector("#jumpButton").addEventListener('touchstart', jumpDown);
+    document.querySelector("#jumpButton").addEventListener('touchend', jumpUp);
+    document.querySelector("#jumpButton").addEventListener('touchcancel', jumpUp);
+    document.querySelector("#switchButton").addEventListener('mousedown', () => switchDown(camera));
+    document.querySelector("#switchButton").addEventListener('touchstart', () => switchDown(camera));
+
+    function jumpDown() {moveDirection.up = 1;}
+    function jumpUp() {moveDirection.up = 0;}
+
+    function switchDown(camera) {
+        camera.set = true;
+        if (camera.current == fpCamera) {
+            camera.current = tpCamera
+            moveDirection.hidePlayer = true
+        } else {
+            camera.current = fpCamera
+            moveDirection.hidePlayer = false
+        }
+    }
 
     function settingsToggle() {
         if (moveDirection.settings) {
@@ -111,8 +135,8 @@ function gamepadControls(moveDirection, fpCamera,tpCamera,camera) {
     if (navigator.getGamepads()[0]) {
         moveDirection.stop = false;
         var controls = getControls(0)
-        moveDirection.back = controls.joysticks.R.y * 10;
-        moveDirection.left = controls.joysticks.R.x * 10;
+        moveDirection.back = controls.joysticks.R.y * 100;
+        //moveDirection.left = controls.joysticks.R.x * 100;
         //camera.rotation.y -= controls.joysticks.L.x * 0.1;
         moveDirection.up = controls.buttons.includes("ZR") ? 1 : 0
         moveDirection.down = controls.buttons.includes("ZL") ? 1 : 0
@@ -202,6 +226,14 @@ function handleKeyDown(event, moveDirection, camera, fpCamera, tpCamera, control
                 inventoryState = "hotbar"
             }
 
+        case 87: //W: FORWARD
+            moveDirection.forward = 100
+            break;
+
+        case 83: //S: BACK
+            moveDirection.back = 100
+            break;
+
         case 65: //A: LEFT
             moveDirection.left = 0.1
             break;
@@ -215,6 +247,12 @@ function handleKeyDown(event, moveDirection, camera, fpCamera, tpCamera, control
             if (moveDirection.isStillJumping) break
             moveDirection.up = 1
             moveDirection.isStillJumping = true
+            //activeAction = animations.startJump(activeAction, animationActions)
+            moveDirection.up = 1
+            /*mixer.addEventListener("finished", (e) => {
+                
+                moveDirection.up = 1
+            })*/
             break;
 
         case 16:

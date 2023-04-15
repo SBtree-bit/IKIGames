@@ -257,11 +257,17 @@ function renderFrame() {
     player.quaternion.z = 0
     /*player.rotation.y = fpCamera.rotation.y
     player.children[0].rotation.y = fpCamera.rotation.y
+
+    //player.rotation.y = fpCamera.rotation.y
+    player.children[0].rotation.copy(fpCamera.rotation)
+    /*player.children[0].rotation.x = 0;
+    player.children[0].rotation.z = 0;
     
     /*camera.position.x = player.position.x;
     camera.position.y = player.position.y;
     camera.position.z = player.position.z - 1;
     player.rotation.set(camera.rotation);*/
+    //player.rotation.set(fpCamera.rotation)
     //player.children[0].rotation.y = 90
     //controls.target.set(player.position.x, player.position.y, player.position.z)
     var tmpPos = new THREE.Vector3()
@@ -399,20 +405,20 @@ function moveBall() {
         /*if (moveY == 1) {
             console.log(1)
             //animations.midJump(activeAction, animationActions)
-        }*/
+        }
 
         let resultantImpulse = new Ammo.btVector3(0, moveY, 0)
         resultantImpulse.op_mul(scalingFactor);
         physicsBody.setLinearVelocity(resultantImpulse);
         if (Math.round(moveZ) == 0 && Math.round(moveX) == 0) { return };
-
         var direction = new THREE.Vector3()
         //player.rotation.y = 100
         camera.getWorldDirection(direction)
         direction = direction.multiplyScalar(moveZ)
         var velocity = player.userData.physicsBody.getLinearVelocity()
-        player.userData.physicsBody.setGravity(new Ammo.btVector3(0, -500, 0))
-        player.userData.physicsBody.setLinearVelocity(new Ammo.btVector3(direction.x + velocity.x(), velocity.y(), direction.z + velocity.z()))
+        //player.userData.physicsBody.setGravity(new Ammo.btVector3(0, 0, 0))
+        velocity = new Ammo.btVector3(direction.x + velocity.x(), direction.y + velocity.y(), direction.z + velocity.z())
+        player.userData.physicsBody.setLinearVelocity(velocity.op_mul(0.5))
         /*direction.y = 0;
         player.position.add(direction.multiplyScalar(0.1))
         physicsWorld.stepSimulation(clock.getDelta())
@@ -499,9 +505,7 @@ function detectCollision() {
 
             let worldPos0 = contactPoint.get_m_positionWorldOnA();
             let worldPos1 = contactPoint.get_m_positionWorldOnB();
-
             if (velocity0.y() < 1 && velocity0.y() > -1) moveDirection.isStillJumping = false
-
             let stopVector = new Ammo.btVector3(0, -20, 0)
             rb0.setLinearVelocity(new Ammo.btVector3(0, 0, 0))
             rb1.setLinearVelocity(new Ammo.btVector3(0, 0, 0))

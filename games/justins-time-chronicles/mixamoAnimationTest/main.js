@@ -70,7 +70,7 @@ import loadModels from '../js/loadAnims.js';
         } else {
             i++;
         }
-    }, 1000)
+    }, 5000)
     var clock = new THREE.Clock();
     function animate() {
         requestAnimationFrame(animate);
