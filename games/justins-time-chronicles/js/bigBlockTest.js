@@ -16,10 +16,10 @@ function bigBlockTest(Ammo, scene, physicsWorld) {
     let ammoObject = new Ammo.btRigidBody(rbInfo)
     physicsWorld.addRigidBody(ammoObject)
 
-    //threeObject.userData.physicsBody = ammoObject
-    //ammoObject.threeObject = threeObject
+    threeObject.userData.physicsBody = ammoObject
+    ammoObject.threeObject = threeObject
 
-    //return threeObject;
+    return threeObject;
 }
 
 export default bigBlockTest;

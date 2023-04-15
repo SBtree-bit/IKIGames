@@ -4,7 +4,7 @@ import joystick from './joystick.js';
 import { CompressedTextureLoader } from "three";
 
 function setupEventHandlers(moveDirection, camera, fpCamera, tpCamera, playerTrans) {
-    moveDirection.control_lookup = {"forward": "w"}
+    moveDirection.control_lookup = {"forward": "w", "back": "s"}
 
     window.addEventListener('keydown', (event) => { handleKeyDown(event, moveDirection, camera, fpCamera, tpCamera, playerTrans,moveDirection.control_lookup) }, false);
     window.addEventListener('keyup', (event) => { handleKeyUp(event, moveDirection) }, false);
@@ -60,6 +60,7 @@ function registerControlMenu(control_lookup) {
         elem.onclick = async function() {
             control_lookup.stop = true
             let key = await waitingKeypress()
+            console.log(key)
             control_lookup[this.id] = key
             this.innerHTML = key
         }
@@ -165,6 +166,9 @@ function handleKeyDown(event, moveDirection, camera, fpCamera, tpCamera, control
             case moveDirection.control_lookup.forward:
                 moveDirection.forward = 10
                 break;
+            case moveDirection.control_lookup.back:
+                moveDirection.back = 10
+                break;
         }
     } else {
         moveDirection.control_lookup.stop = false
@@ -198,14 +202,6 @@ function handleKeyDown(event, moveDirection, camera, fpCamera, tpCamera, control
                 inventoryState = "hotbar"
             }
 
-        case 87: //W: FORWARD
-            moveDirection.forward = 10
-            break;
-
-        case 83: //S: BACK
-            moveDirection.back = 10
-            break;
-
         case 65: //A: LEFT
             moveDirection.left = 0.1
             break;
@@ -224,10 +220,6 @@ function handleKeyDown(event, moveDirection, camera, fpCamera, tpCamera, control
         case 16:
             moveDirection.down = 1;
             break;
-
-        case 13:
-            moveDirection.stop = true;
-            break;
     }
 }
 
@@ -235,14 +227,21 @@ function handleKeyDown(event, moveDirection, camera, fpCamera, tpCamera, control
 function handleKeyUp(event, moveDirection){
     let keyCode = event.keyCode;
 
-    switch(keyCode){
-        case 87: //FORWARD
-            moveDirection.forward = 0
-            break;
+    if(!moveDirection.control_lookup.stop) {
+        console.log(moveDirection.control_lookup.forward)
+        switch(event.key) {
+            case moveDirection.control_lookup.forward:
+                moveDirection.forward = 0
+                break;
+            case moveDirection.control_lookup.back:
+                moveDirection.back = 0;
+                break;
+        }
+    } else {
+        moveDirection.control_lookup.stop = false
+    }
 
-        case 83: //BACK
-            moveDirection.back = 0
-            break;
+    switch(keyCode){
 
         case 65: //LEFT
             moveDirection.left = 0
@@ -259,10 +258,6 @@ function handleKeyUp(event, moveDirection){
 
         case 16:
             moveDirection.down = 0;
-            break;
-        
-        case 13:
-            moveDirection.stop = false;
             break;
     }
 

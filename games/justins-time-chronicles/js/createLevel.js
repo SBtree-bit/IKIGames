@@ -19,7 +19,7 @@ async function createLevel(scene, physicsWorld, renderer, rigidBodies, kinematic
         .setKTX2Loader(KTX2_LOADER.detectSupport(renderer))
         .setMeshoptDecoder(MeshoptDecoder);*/
     const loader = new GLTFLoader()
-    loader.load("models/obj_test/test37.glb", (gltf) => {
+    loader.load("models/laboratory.glb", (gltf) => {
 
         //var gltf = await loader.loadAsync('models/obj_test/test20.glb')
         //var gltf = await loader.loadAsync('temple.glb')
